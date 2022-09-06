@@ -128,6 +128,11 @@ def shut_the_box(player, timelimit):
         eliminate_numbers = box.parse_input(eliminate_str, remaining_numbers)
         remaining_numbers = [num for num in remaining_numbers if num not in eliminate_numbers]
 
+        # If input is invalid end the game
+        if len(eliminate_numbers) == 0:
+            print("Game Over!")
+            break
+
         # Check time taken so far, if it has exceeded the time limit end the game
         current_time = timelimit - (time.time() - start_time)
         if current_time <= 0:
