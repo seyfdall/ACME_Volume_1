@@ -70,7 +70,7 @@ def hypot(a, b):
     a_sqr = calc.product(a, a)
     b_sqr = calc.product(b, b)
     # Summing the squares
-    sum = a_sqr + b_sqr
+    sum = calc.sum(a_sqr, b_sqr)
     # Returning the square root of sum
     return calc.sqrt(sum)
 
@@ -130,8 +130,7 @@ def shut_the_box(player, timelimit):
 
         # If input is invalid end the game
         if len(eliminate_numbers) == 0:
-            print("Game Over!")
-            break
+            print("Invalid Input")
 
         # Check time taken so far, if it has exceeded the time limit end the game
         current_time = timelimit - (time.time() - start_time)
