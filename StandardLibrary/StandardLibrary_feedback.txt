@@ -1,0 +1,30 @@
+09/08/22 22:19
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Instead of using +, make sure to use your calc function
+Score += 8
+
+Problem 4 (10 points):
+Score += 10
+
+Problem 5 (15 points):
+Make sure the game continues if the input is invalid. Great start!
+Score += 5
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 38/50 = 76.0%
+
+
+Comments:
+	Awesome job!
+
+-------------------------------------------------------------------------------
+
