@@ -1,0 +1,30 @@
+09/15/22 17:33
+
+Problem 1 (10 points):
+Make sure there is room to add items to the bag. If not, print "No Room!"
+ValueError: operands could not be broadcast together with shapes (5,) (6,) 
+
+Problem 2 (10 points):
+Jetpack.put() failed to print "No Room!"
+ValueError: operands could not be broadcast together with shapes (3,) (4,) 
+
+Problem 3 (10 points):
+Add extra tabs between owner, color and size so it's lined up nicely
+Score += 9
+
+Problem 4 (15 points):
+ComplexNumber.__eq__() failed on nonequal
+ComplexNumber.__ne__() failed on nonequal
+Score += 14
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 28/50 = 56.0%
+
+
+Comments:
+	Great work! Come to office hours for questions with ComplexNumber
+
+-------------------------------------------------------------------------------
+
