@@ -38,7 +38,7 @@ class Backpack:
         """
         # If there are too many items in contents print "No Room!"
         # Otherwise, add the item to the backpack
-        if len(self.contents) > self.max_size:
+        if len(self.contents) >= self.max_size:
             print("No Room!")
         else:
             self.contents.append(item)
@@ -75,9 +75,9 @@ class Backpack:
     def __str__(self):
         """Return a string describing the Backpack"""
         # Build a description string one line at a time
-        description = ("Owner:\t" + str(self.name) + '\n' +
-                       "Color:\t" + str(self.color) + '\n' +
-                       "Size:\t" + str(len(self.contents)) + '\n' +
+        description = ("Owner:\t\t" + str(self.name) + '\n' +
+                       "Color:\t\t" + str(self.color) + '\n' +
+                       "Size:\t\t" + str(len(self.contents)) + '\n' +
                        "Max Size:\t" + str(self.max_size) + '\n' +
                        "Contents:\t" + str(self.contents) + '\n')
         return description
@@ -254,9 +254,10 @@ def test_backpack():
     testpack = Backpack("Barry", "black") # Instantiate the object.
     if testpack.name != "Barry": # Test an attribute.
         print("Backpack.name assigned incorrectly")
-    for item in ["pencil", "pen", "paper", "computer"]:
+    for item in ["pencil", "pen", "paper", "computer", "body"]:
         testpack.put(item) # Test a method.
     print("Contents:", testpack.contents)
+    print(str(testpack))
 
 
 def test_Jetpack():
