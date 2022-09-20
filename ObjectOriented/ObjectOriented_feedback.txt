@@ -28,3 +28,28 @@ Comments:
 
 -------------------------------------------------------------------------------
 
+09/20/22 09:36
+
+Problem 1 (10 points):
+Score += 10
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (15 points):
+ComplexNumber.__eq__() failed on nonequal
+ComplexNumber.__ne__() failed on nonequal
+Score += 14
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 49/50 = 98.0%
+
+Excellent!
+
+-------------------------------------------------------------------------------
+
