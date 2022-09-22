@@ -1,0 +1,25 @@
+09/22/22 17:11
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (25 points):
+ValueError: Case not correctly input for uniform() method
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 25/50 = 50.0%
+
+
+Comments:
+	Not exactly sure what the error is on 4. Come to office hours if you need or would like assistance
+
+-------------------------------------------------------------------------------
+
