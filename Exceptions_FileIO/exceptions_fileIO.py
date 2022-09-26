@@ -140,7 +140,6 @@ class ContentFilter(object):
                 raise ValueError("Case not correctly input for uniform() method")
 
 
-
     def reverse(self, outfile, mode='w', unit='word'):
         """ Write the data to the outfile in reverse order. Include an additional
         keyword argument unit that defaults to "line". If unit="word", reverse
@@ -213,9 +212,10 @@ class ContentFilter(object):
                 f"Number of lines:\t\t{self.lines}")
 
 
-if __name__ == "__main__":
+def test_1():
     # arithmagic()
     # random_walk(100000000)
     content = ContentFilter("test")
     content.transpose("test1", 'w')
-    print(str(content))
+    content.uniform("test2", 'w', 'lower123')
+    # print(str(content))
