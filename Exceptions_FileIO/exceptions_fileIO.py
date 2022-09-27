@@ -162,7 +162,7 @@ class ContentFilter(object):
                 output = '\n'.join(self.contents.split('\n')[::-1])
                 outputFile.write(output)
             else:
-                raise ValueError("Case not correctly input for uniform() method")
+                raise ValueError("Case not correctly input for reverse() method")
 
     def transpose(self, outfile, mode='w'):
         """ Write a transposed version of the data to the outfile. That is, write
