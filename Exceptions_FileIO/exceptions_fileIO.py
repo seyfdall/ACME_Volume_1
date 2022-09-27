@@ -140,7 +140,7 @@ class ContentFilter(object):
             raise ValueError("Case not correctly input for uniform() method")
 
         with open(outfile, mode) as outputFile:
-                outputFile.write(to_write)
+            outputFile.write(to_write)
 
     def reverse(self, outfile, mode='w', unit='word'):
         """ Write the data to the outfile in reverse order. Include an additional
