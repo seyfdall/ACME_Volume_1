@@ -116,7 +116,6 @@ class ContentFilter(object):
         self.spacecount = len([c for c in self.contents if c in [' ', '\t', '\n']])
         self.lines = 0 if len(self.contents) == 0 else len([c for c in self.contents.strip() if c == '\n']) + 1
 
-
  # Problem 4 ---------------------------------------------------------------
     def check_mode(self, mode):
         """ Raise a ValueError if the mode is invalid. """
@@ -131,14 +130,17 @@ class ContentFilter(object):
 
         self.check_mode(mode)
 
-        with open(outfile, mode) as outputFile:
-            if case == "upper":
-                outputFile.write(self.contents.upper())
-            elif case == "lower":
-                outputFile.write(self.contents.lower())
-            else:
-                raise ValueError("Case not correctly input for uniform() method")
+        to_write = ""
 
+        if case == "upper":
+            to_write = self.contents.upper()
+        elif case == "lower":
+            to_write = self.contents.lower()
+        else:
+            raise ValueError("Case not correctly input for uniform() method")
+
+        with open(outfile, mode) as outputFile:
+                outputFile.write(to_write)
 
     def reverse(self, outfile, mode='w', unit='word'):
         """ Write the data to the outfile in reverse order. Include an additional
@@ -190,8 +192,6 @@ class ContentFilter(object):
 
             outputFile.write(transpose_output)
 
-
-
     def __str__(self):
         """ Printing a ContentFilter object yields the following output:
 
@@ -217,5 +217,6 @@ def test_1():
     # random_walk(100000000)
     content = ContentFilter("test")
     content.transpose("test1", 'w')
-    content.uniform("test2", 'w', 'lower123')
+    # content.uniform("test2", 'w', 'lower123')
+    content.uniform("test", 'w', 'lower')
     # print(str(content))
