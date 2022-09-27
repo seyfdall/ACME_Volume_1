@@ -158,7 +158,7 @@ class ContentFilter(object):
                     output[i] = ' '.join(output[i].split(' ')[::-1])
                 output = '\n'.join(output)
                 outputFile.write(output)
-            elif unit == "Line":
+            elif unit == "line":
                 output = '\n'.join(self.contents.split('\n')[::-1])
                 outputFile.write(output)
             else:
