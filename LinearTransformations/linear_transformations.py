@@ -6,6 +6,9 @@
 """
 
 from random import random
+import numpy as np
+from matplotlib import pyplot as plt
+import time
 
 
 # Problem 1
@@ -20,7 +23,9 @@ def stretch(A, a, b):
     Return:
         ((2,n) ndarray): Transformed matrix
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Create the stretch matrix and return the matrix multiplication of them
+    stretch_matrix = np.array([[a, 0], [0, b]])
+    return np.matmul(stretch_matrix, A)
 
 def shear(A, a, b):
     """Slant the points in A by a in the x direction and b in the
@@ -33,7 +38,9 @@ def shear(A, a, b):
     Return:
         ((2,n) ndarray): Transformed matrix
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Create the shear matrix and return the matrix multiplication of them
+    shear_matrix = np.array([[1, a], [b, 1]])
+    return np.matmul(shear_matrix, A)
 
 def reflect(A, a, b):
     """Reflect the points in A about the line that passes through the origin
@@ -46,7 +53,11 @@ def reflect(A, a, b):
     Return:
         ((2,n) ndarray): Transformed matrix
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Create the reflect matrix and return the matrix multiplication of them
+    mat = np.array([[a**2 - b**2, 2*a*b], [2*a*b, b**2 - a**2]])
+    coef = 1 / (a**2 + b**2)
+    t = mat * coef
+    return np.matmul(t, A)
 
 def rotate(A, theta):
     """Rotate the points in A about the origin by theta radians.
@@ -57,7 +68,9 @@ def rotate(A, theta):
     Return:
         ((2,n) ndarray): Transformed matrix
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Create the rotation matrix and return the matrix multiplication of them
+    rotate_matrix = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    return np.matmul(rotate_matrix, A)
 
 
 # Problem 2
@@ -73,7 +86,36 @@ def solar_system(T, x_e, x_m, omega_e, omega_m):
         omega_e (float): The earth's angular velocity.
         omega_m (float): The moon's angular velocity.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    # Setup initial variables
+    p_e = np.array([x_e, 0])
+    p_m = np.array([x_m, 0])
+
+    earth_coords_x = [x_e]
+    earth_coords_y = [0]
+    moon_coords_x = [x_m]
+    moon_coords_y = [0]
+
+    for t in np.linspace(0, T, num=100):
+
+        # Step 1 compute p_e(T) by rotating p_e counterclockwise by omega_e radians
+        p_e_t = rotate(p_e, t * omega_e)
+
+        # Step 2 calculate position of moon relative to earth at time t
+        moon_relative_earth = rotate(p_m - p_e, t * omega_m)
+
+        # Step 3 compute p_m(T) translate
+        p_m_t = p_e_t + moon_relative_earth
+
+        # Append coordinates to arrays
+        moon_coords_x.append(p_m_t[0])
+        moon_coords_y.append(p_m_t[1])
+        earth_coords_x.append(p_e_t[0])
+        earth_coords_y.append((p_e_t[1]))
+
+    plt.plot(moon_coords_x, moon_coords_y, 'r--', markersize=1.5)
+    plt.plot(earth_coords_x, earth_coords_y, '.b', markersize=3.0)
+    plt.gca().set_aspect("equal")
+    plt.show()
 
 
 def random_vector(n):
@@ -109,8 +151,41 @@ def prob3():
     that your figure accurately describes the growth, but avoid values of n
     that lead to execution times of more than 1 minute.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
 
+    # Initialize tracking arrays
+    mat_vec_times = [0]
+    mat_mat_times = [0]
+    n = [i for i in range(50, 250, 50)]
+
+    for i in n:
+        A = random_matrix(i)
+        x = random_vector(i)
+
+        # Matrix-Matrix multiplication first
+        start = time.time()
+        matrix_matrix_product(A, A)
+        finish = time.time()
+        mat_mat_times.append(finish - start)
+
+        # Matrix-Vector
+        start = time.time()
+        matrix_vector_product(A, x)
+        finish = time.time()
+        mat_vec_times.append(finish - start)
+
+    # Create and subplot the Matrix-Vector graph
+    ax1 = plt.subplot(121)
+    ax1.plot(range(0, 250, 50), mat_vec_times, 'g-')
+    plt.xlabel("n")
+    plt.ylabel("Seconds")
+    plt.title("Matrix-Vector Multiplication")
+
+    # Create and subplot the sin(2x) graph
+    ax2 = plt.subplot(122)
+    ax2.plot(range(0, 250, 50), mat_mat_times, 'r--')
+    plt.xlabel("n")
+    plt.title("Matrix-Matrix Multiplication")
+    plt.show()
 
 # Problem 4
 def prob4():
@@ -120,4 +195,110 @@ def prob4():
     four sets of execution times on a regular linear scale, and one with all
     four sets of exections times on a log-log scale.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    # Initialize tracking arrays
+    mat_vec_prod_times = [0]
+    mat_mat_prod_times = [0]
+    mat_vec_dot_times = [0]
+    mat_mat_dot_times = [0]
+    n = [i for i in range(50, 250, 50)]
+
+    for i in n:
+        A = random_matrix(i)
+        x = random_vector(i)
+
+        # Matrix-Matrix Product
+        start = time.perf_counter()
+        matrix_matrix_product(A, A)
+        finish = time.perf_counter()
+        mat_mat_prod_times.append(finish - start)
+
+        # Matrix-Vector Product
+        start = time.perf_counter()
+        matrix_vector_product(A, x)
+        finish = time.perf_counter()
+        mat_vec_prod_times.append(finish - start)
+
+        # Matrix-Matrix np.dot
+        start = time.perf_counter()
+        np.dot(A, A)
+        finish = time.perf_counter()
+        mat_mat_dot_times.append(finish - start)
+
+        # Matrix-Vector np.dot
+        start = time.perf_counter()
+        np.dot(A, x)
+        finish = time.perf_counter()
+        mat_vec_dot_times.append(finish - start)
+
+    # Create and subplot the linear time graph
+    ax1 = plt.subplot(121)
+    ax1.plot(range(0, 250, 50), mat_mat_prod_times, 'g-', label="Mat_Mat_Prod")
+    ax1.plot(range(0, 250, 50), mat_vec_prod_times, 'r-', label="Mat_Vec_Prod")
+    ax1.plot(range(0, 250, 50), mat_mat_dot_times, 'b-', label="Mat_Mat_Dot")
+    ax1.plot(range(0, 250, 50), mat_vec_dot_times, 'm-', label="Mat_Vec_Dot")
+    plt.xlabel("n")
+    plt.ylabel("Seconds")
+    plt.title("Linear Graph Multiplication")
+    plt.legend(loc="upper left")
+
+    # Create and subplot the log-log graph
+    ax2 = plt.subplot(122)
+    ax2.set_xlim((1, 250))
+    ax2.set_ylim((2**-20, 1))
+    ax2.loglog(range(0, 250, 50), mat_mat_prod_times, 'g-', label="Mat_Mat_Prod", base=2)
+    ax2.loglog(range(0, 250, 50), mat_vec_prod_times, 'r-', label="Mat_Vec_Prod", base=2)
+    ax2.loglog(range(0, 250, 50), mat_mat_dot_times, 'b-', label="Mat_Mat_Dot", base=2)
+    ax2.loglog(range(0, 250, 50), mat_vec_dot_times, 'm-', label="Mat_Vec_Dot", base=2)
+    plt.xlabel("n")
+    plt.ylabel("Seconds")
+    plt.title("Log Log Graph")
+    plt.legend(loc="upper left")
+    plt.show()
+
+
+def showplot(H):
+    # This function displays the image produce by the collection of coordinates given in H
+    plt.plot(H[0,:],H[1,:],'k.',markersize=3.5)
+    plt.axis([-1.5,1.5,-1.5,1.5])
+    plt.gca().set_aspect("equal")
+    plt.show()
+
+
+def test_stretch():
+    """Problem 1 Stretch Unit test"""
+    data = np.load("horse.npy")
+    showplot(data)
+    showplot(stretch(data, 2, 2))
+
+
+def test_shear():
+    """Problem 1 Shear Unit test"""
+    data = np.load("horse.npy")
+    showplot(data)
+    showplot(shear(data, 2, 2))
+
+
+def test_reflection():
+    """Problem 1 Reflection Unit Test"""
+    data = np.load("horse.npy")
+    showplot(data)
+    showplot(reflect(data, 2, 2))
+
+
+def test_rotation():
+    """Problem 1 Rotate Unit Test"""
+    data = np.load("horse.npy")
+    showplot(data)
+    showplot(rotate(data, 180))
+
+def test_solar_system():
+    """Problem 2 Solar System Unit Test"""
+    solar_system(3*np.pi/2, 10, 11, 1, 13)
+
+def test_prob_3():
+    """Problem 3 Test"""
+    prob3()
+
+def test_prob_4():
+    """Problem 4 Test"""
+    prob4()
