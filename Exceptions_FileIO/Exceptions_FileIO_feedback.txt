@@ -23,3 +23,124 @@ Comments:
 
 -------------------------------------------------------------------------------
 
+09/26/22 17:30
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (25 points):
+ValueError: Case not correctly input for uniform() method
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 25/50 = 50.0%
+
+-------------------------------------------------------------------------------
+
+09/26/22 17:31
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+random_walk() failed to print 'Process Interrupted'
+Score += 4
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (25 points):
+ValueError: Case not correctly input for uniform() method
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 24/50 = 48.0%
+
+
+Comments:
+	[A[A[B[B[B
+
+-------------------------------------------------------------------------------
+
+09/26/22 18:36
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (25 points):
+ValueError: Case not correctly input for uniform() method
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 25/50 = 50.0%
+
+-------------------------------------------------------------------------------
+
+09/27/22 09:18
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (25 points):
+ValueError: Case not correctly input for uniform() method
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 25/50 = 50.0%
+
+
+Comments:
+	Still looking into this...
+
+-------------------------------------------------------------------------------
+
+09/27/22 09:48
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (25 points):
+Spacing off in ContentFilter string
+Score += 24
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 49/50 = 98.0%
+
+Excellent!
+
+
+Comments:
+	Much better! Nice work Dallin!
+
+-------------------------------------------------------------------------------
+
