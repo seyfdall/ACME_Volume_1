@@ -196,11 +196,11 @@ def prob4():
     four sets of exections times on a log-log scale.
     """
     # Initialize tracking arrays
-    mat_vec_prod_times = [0]
-    mat_mat_prod_times = [0]
-    mat_vec_dot_times = [0]
-    mat_mat_dot_times = [0]
-    n = [i for i in range(50, 250, 50)]
+    mat_vec_prod_times = []
+    mat_mat_prod_times = []
+    mat_vec_dot_times = []
+    mat_mat_dot_times = []
+    n = [2**i for i in range(9)]
 
     for i in n:
         A = random_matrix(i)
@@ -232,10 +232,10 @@ def prob4():
 
     # Create and subplot the linear time graph
     ax1 = plt.subplot(121)
-    ax1.plot(range(0, 250, 50), mat_mat_prod_times, 'g-', label="Mat_Mat_Prod")
-    ax1.plot(range(0, 250, 50), mat_vec_prod_times, 'r-', label="Mat_Vec_Prod")
-    ax1.plot(range(0, 250, 50), mat_mat_dot_times, 'b-', label="Mat_Mat_Dot")
-    ax1.plot(range(0, 250, 50), mat_vec_dot_times, 'm-', label="Mat_Vec_Dot")
+    ax1.plot(range(0, 270, 30), mat_mat_prod_times, 'g-', label="Mat_Mat_Prod")
+    ax1.plot(range(0, 270, 30), mat_vec_prod_times, 'r-', label="Mat_Vec_Prod")
+    ax1.plot(range(0, 270, 30), mat_mat_dot_times, 'b-', label="Mat_Mat_Dot")
+    ax1.plot(range(0, 270, 30), mat_vec_dot_times, 'm-', label="Mat_Vec_Dot")
     plt.xlabel("n")
     plt.ylabel("Seconds")
     plt.title("Linear Graph Multiplication")
@@ -245,10 +245,10 @@ def prob4():
     ax2 = plt.subplot(122)
     ax2.set_xlim((1, 250))
     ax2.set_ylim((2**-20, 1))
-    ax2.loglog(range(0, 250, 50), mat_mat_prod_times, 'g-', label="Mat_Mat_Prod", base=2)
-    ax2.loglog(range(0, 250, 50), mat_vec_prod_times, 'r-', label="Mat_Vec_Prod", base=2)
-    ax2.loglog(range(0, 250, 50), mat_mat_dot_times, 'b-', label="Mat_Mat_Dot", base=2)
-    ax2.loglog(range(0, 250, 50), mat_vec_dot_times, 'm-', label="Mat_Vec_Dot", base=2)
+    ax2.loglog(range(0, 270, 30), mat_mat_prod_times, 'g-', label="Mat_Mat_Prod", base=2)
+    ax2.loglog(range(0, 270, 30), mat_vec_prod_times, 'r-', label="Mat_Vec_Prod", base=2)
+    ax2.loglog(range(0, 270, 30), mat_mat_dot_times, 'b-', label="Mat_Mat_Dot", base=2)
+    ax2.loglog(range(0, 270, 30), mat_vec_dot_times, 'm-', label="Mat_Vec_Dot", base=2)
     plt.xlabel("n")
     plt.ylabel("Seconds")
     plt.title("Log Log Graph")
