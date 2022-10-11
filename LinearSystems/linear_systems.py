@@ -1,10 +1,12 @@
 # linear_systems.py
 """Volume 1: Linear Systems.
-<Name>
-<Class>
-<Date>
+<Name> Dallin Seyfried
+<Class> Volume 1 Math 345 Section 2
+<Date> 10/11/22
 """
 
+import numpy as np
+import pytest
 
 # Problem 1
 def ref(A):
@@ -18,7 +20,15 @@ def ref(A):
     Returns:
         ((n,n) ndarray): The REF of A.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Copy the original array
+    ref_A = np.copy(A).astype(float)
+
+    # Cycle through each column and row skipping entries of zero and reducing rows
+    for col in range(len(ref_A)):
+        for row in range(col + 1, len(ref_A[0])):
+            if ref_A[row, col] != 0:
+                ref_A[row, col:] -= (ref_A[row, col] / ref_A[col, col]) * ref_A[col, col:]
+    return ref_A
 
 
 # Problem 2
@@ -33,7 +43,18 @@ def lu(A):
         L ((n,n) ndarray): The lower-triangular part of the decomposition.
         U ((n,n) ndarray): The upper-triangular part of the decomposition.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    # Get the shape of A, and initialize L and U
+    m, n = np.shape(A)
+    U = np.copy(A).astype(float)
+    L = np.identity(len(A))
+
+    # Cycle through each element of L and U and update them
+    for j in range(n):
+        for i in range(j + 1, m):
+            L[i, j] = U[i, j] / U[j, j]
+            U[i, j:] = U[i, j:] - L[i, j] * U[j, j:]
+
+    return L, U
 
 
 # Problem 3
@@ -48,7 +69,25 @@ def solve(A, b):
     Returns:
         x ((m,) ndarray): The solution to the linear system.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+
+    # LU Decomposition on A
+    L, U = lu(A)
+    b = np.array(b).astype("float")
+    n = len(b)
+
+    # Find y
+    y = np.zeros(n).astype('float')
+    for i in range(n):
+        y[i] = (b[i] - np.dot(y, L[i, :])) / L[i, i]
+
+    # Find x
+    n = len(y)
+    x = np.zeros(n).astype('float')
+    for i in range(n):
+        j = n - (i + 1)
+        x[j] = (y[j] - np.dot(x, U[j, :])) / U[j, j]
+
+    return x
 
 
 # Problem 4
@@ -109,3 +148,44 @@ def prob6():
     appropriate and use a legend to label each line.
     """
     raise NotImplementedError("Problem 6 Incomplete")
+
+
+def test_ref():
+    """Testing Problem 1 - reduced echelon form"""
+    A = np.array([[1, 1, 1, 1],
+                  [1, 4, 2, 3],
+                  [4, 7, 8, 9],
+                  [0, 0, 0, 1]], dtype=np.float)
+    ref_A = ref(A)
+    print("Ref_A")
+    print(ref_A)
+    print("NP array")
+    print(np.array([[1, 1, 1, 1],
+                      [0, 3, 1, 2],
+                      [0, 0, 3, 3],
+                      [0, 0, 0, 1]], dtype=np.float))
+
+
+def test_LU():
+    """Testing Problem 2 - LU Decomposition"""
+    A = np.array([[1, 1, 1, 1],
+                  [1, 4, 2, 3],
+                  [4, 7, 8, 9],
+                  [0, 0, 0, 1]], dtype=np.float)
+    L, U = lu(A)
+    A_test = L @ U
+    print("\nA")
+    print(A)
+    print("L * U")
+    print(A_test)
+
+
+def test_LU_solve():
+    """Testing Problem 3 - Solve LU Decomposition"""
+    A = np.array([[3, 1, -2], [1.5, 2, -5], [2, -4, 1]], dtype=np.float)
+    b = np.array([1.1, 3, -2], dtype=np.float)
+    x = solve(A, b)
+    print('\n', x)
+
+
+
