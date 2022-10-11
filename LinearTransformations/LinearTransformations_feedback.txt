@@ -45,3 +45,27 @@ Excellent!
 
 -------------------------------------------------------------------------------
 
+10/11/22 09:25
+
+Problem 1 (10 points):
+Score += 10
+
+Problem 2 (15 points):
+Score += 15
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (10 points):
+Notate which lines are from numpy
+Score += 9
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 49/50 = 98.0%
+
+Excellent!
+
+-------------------------------------------------------------------------------
+
