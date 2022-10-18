@@ -4,8 +4,13 @@
 <Class> Volume 1 Math 345 Section 2
 <Date> 10/11/22
 """
+import time
 
 import numpy as np
+from scipy import linalg as la
+from matplotlib import pyplot as plt
+from scipy import sparse
+from scipy.sparse import linalg as spla
 import pytest
 
 # Problem 1
@@ -108,7 +113,58 @@ def prob4():
     Plot the system size n versus the execution times. Use log scales if
     needed.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+
+    # Generate domain and codomain arrays
+    domain = [2**x for x in range(1, 12)]
+    approach_1_times = [0]
+    approach_2_times = [0]
+    approach_3_times = [0]
+    approach_4_times = [0]
+
+    # Cycle through each time in the domain
+    for x in domain:
+        b = np.random.random(x)
+        A = np.random.random((x, x))
+
+        # Approach 1 with la.inv
+        start = time.perf_counter()
+        A_inv = la.inv(A)
+        np.dot(A_inv, b)
+        finish = time.perf_counter()
+        approach_1_times.append(finish - start)
+
+        # Approach 2 with la.solve
+        start = time.perf_counter()
+        la.solve(A, b)
+        finish = time.perf_counter()
+        approach_2_times.append(finish - start)
+
+        # Approach 3 with la.lu_factor and la.lu_solve
+        start = time.perf_counter()
+        lu, piv = la.lu_factor(A)
+        la.lu_solve((lu, piv), b)
+        finish = time.perf_counter()
+        approach_3_times.append(finish - start)
+
+        # Approach 4 similar to 3 but time only lu_solve
+        lu, piv = la.lu_factor(A)
+        start = time.perf_counter()
+        la.lu_solve((lu, piv), b)
+        finish = time.perf_counter()
+        approach_4_times.append(finish - start)
+
+    domain.insert(0, 0)
+
+    # Plot the times
+    plt.loglog(domain, approach_1_times, 'g-', label="Approach 1", base=2)
+    plt.loglog(domain, approach_2_times, 'r-', label="Approach 2", base=2)
+    plt.loglog(domain, approach_3_times, 'b-', label="Approach 3", base=2)
+    plt.loglog(domain, approach_4_times, 'y-', label="Approach 4", base=2)
+    plt.xlabel("n")
+    plt.ylabel("Times")
+    plt.title("Approach Times")
+    plt.legend(loc="upper left")
+    plt.show()
 
 
 # Problem 5
@@ -128,8 +184,19 @@ def prob5(n):
     Returns:
         A ((n**2,n**2) SciPy sparse matrix)
     """
-    raise NotImplementedError("Problem 5 Incomplete")
 
+    # Building the B matrix following the DIA Format
+    diagonals = [[1 for i in range(n - 1)], [-4 for i in range(n)], [1 for i in range(n - 1)]]
+    offsets = [-1, 0, 1]
+    B = sparse.diags(diagonals, offsets, shape=(n,n)).toarray()
+
+    # Building the sparse block matrix A following the BSR Format
+    A = sparse.block_diag((B for i in range(n)))
+    if n > 1:
+        A.setdiag([1 for i in range(n**2 - n)], n)
+        A.setdiag([1 for i in range(n**2 - n)], -n)
+
+    return sparse.coo_matrix(A)
 
 # Problem 6
 def prob6():
@@ -147,7 +214,41 @@ def prob6():
     size n**2 versus the execution times. As always, use log scales where
     appropriate and use a legend to label each line.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+
+    # Generate domain and codomain arrays
+    domain = [2 ** x for x in range(1, 8)]
+    approach_1_times = [0]
+    approach_2_times = [0]
+
+    # Cycle through each option
+    for n in domain:
+        b = np.random.random(n**2)
+        A = prob5(n)
+
+        # Approach 1 with CSR Format
+        Acsr = A.tocsr()
+        start = time.perf_counter()
+        spla.spsolve(Acsr, b)
+        finish = time.perf_counter()
+        approach_1_times.append(finish - start)
+
+        # Approach 2 with la.solve
+        Anum = A.toarray()
+        start = time.perf_counter()
+        la.solve(Anum, b)
+        finish = time.perf_counter()
+        approach_2_times.append(finish - start)
+
+    domain.insert(0, 0)
+
+    # Plot the times
+    plt.loglog(domain, approach_1_times, 'g-', label="CSR", base=2)
+    plt.loglog(domain, approach_2_times, 'r-', label="Numpy", base=2)
+    plt.xlabel("n")
+    plt.ylabel("Times")
+    plt.title("Regular and Sparse linear Solvers Times")
+    plt.legend(loc="upper left")
+    plt.show()
 
 
 def test_ref():
@@ -187,5 +288,22 @@ def test_LU_solve():
     x = solve(A, b)
     print('\n', x)
 
+
+def test_scipy_graph():
+    """Testing Problem 4 - Time the scipy stuff"""
+    prob4()
+
+
+def test_scipy_sparse_matrix():
+    """Testing Problem 5 - Scipy Block Matrix stuff"""
+    A = prob5(5)
+    plt.spy(A, markersize=1)
+    plt.show()
+
+
+def test_reg_sparse_solvers():
+    """Testing Problem 6 - Write a function that times regular
+    and sparse linear system solvers"""
+    prob6()
 
 
