@@ -4,8 +4,13 @@
 <Class>
 <Date>
 """
+import math
 
 import numpy as np
+from scipy import linalg as la
+from imageio.v2 import imread
+from matplotlib import pyplot as plt
+from scipy import sparse
 
 
 # Problem 1
@@ -18,7 +23,7 @@ def laplacian(A):
     Returns:
         L ((N,N) ndarray): The Laplacian matrix of G.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    return np.diag(np.sum(A, axis=0)) - A
 
 
 # Problem 2
@@ -35,7 +40,28 @@ def connectivity(A, tol=1e-8):
         (int): The number of connected components in G.
         (float): the algebraic connectivity of G.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    # Compute Laplacian and eigenvalues
+    L = laplacian(A)
+    eigs = np.real(la.eigvals(L))
+    eigs.sort()
+    eig_vals = list(eigs.copy())
+
+    # Compute the connectivity of the graph
+    j = 0
+    for i in range(len(eig_vals)):
+        if eig_vals[j] < tol:
+            eig_vals.remove(eig_vals[j])
+            j -= 1
+        j += 1
+    alg_con = eig_vals[0]
+
+    # Compute the number of connected components of the graph
+    connected = 0
+    for eig in eigs:
+        if eig < tol:
+            connected += 1
+
+    return connected, alg_con
 
 
 # Helper function for problem 4.
@@ -68,7 +94,7 @@ def get_neighbors(index, radius, height, width):
     # Determine which candidates are within the given radius of the pixel.
     R = np.sqrt(((X - col)**2 + (Y - row)**2))
     mask = R < radius
-    return (X[mask] + Y[mask]*width).astype(np.int), R[mask]
+    return (X[mask] + Y[mask]*width).astype(int), R[mask]
 
 
 # Problems 3-6
@@ -78,17 +104,42 @@ class ImageSegmenter:
     # Problem 3
     def __init__(self, filename):
         """Read the image file. Store its brightness values as a flat array."""
-        raise NotImplementedError("Problem 3 Incomplete")
+        self.image = imread(filename)
+        self.scaled = self.image / 255
+
+        # If image is rgb compute brightness with scaled
+        if len(self.image.shape) == 3:
+            self.brightness = self.scaled.mean(axis=2)
+        else:
+            self.brightness = self.image
+        self.brightness = np.ravel(self.brightness)
+        self.height = len(self.image)
+        self.width = len(self.image[0])
 
     # Problem 3
     def show_original(self):
         """Display the original image."""
-        raise NotImplementedError("Problem 3 Incomplete")
+        # If image is rgb disply normally otherwise use cmap
+        if len(self.image.shape) == 3:
+            plt.imshow(self.image)
+        else:
+            plt.imshow(self.image, cmap="gray")
+        plt.axis("off")
+        plt.show()
 
     # Problem 4
     def adjacency(self, r=5., sigma_B2=.02, sigma_X2=3.):
         """Compute the Adjacency and Degree matrices for the image graph."""
-        raise NotImplementedError("Problem 4 Incomplete")
+        A = sparse.lil_matrix((self.height * self.width, self.height * self.width))
+        D = np.zeros(self.height * self.width)
+        for i in range(self.height * self.width):
+            neighbors, distances = get_neighbors(i, r, self.height, self.width)
+            D[i] = self.brightness[i]
+            A[i, neighbors] = math.pow(math.e, (-abs(self.brightness[i] - self.brightness[neighbors]) / sigma_B2 - distances / sigma_X2))
+        D = np.sum(A, axis=1)
+
+        A = sparse.csc_matrix(A)
+        return A, D
 
     # Problem 5
     def cut(self, A, D):
@@ -106,3 +157,30 @@ class ImageSegmenter:
 #     ImageSegmenter("dream.png").segment()
 #     ImageSegmenter("monument_gray.png").segment()
 #     ImageSegmenter("monument.png").segment()
+
+
+def test_prob_1():
+    A = np.random.random((4, 4))
+    print(laplacian(A))
+
+
+def test_prob_2():
+    A = np.random.random((4, 4))
+    B = np.array([[0, 3, 0, 0, 0, 0],
+                  [3, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 1, 0, 0],
+                  [0, 0, 1, 0, 2, .5],
+                  [0, 0, 0, 2, 0, 1],
+                  [0, 0, 0, .5, 1, 0]])
+    print(connectivity(A))
+    print(connectivity(B))
+
+
+def test_prob_3():
+    img_seg = ImageSegmenter("dream_gray.png")
+    img_seg.show_original()
+
+
+def test_prob_4():
+    img_seg = ImageSegmenter("dream.png")
+    img_seg.adjacency()
