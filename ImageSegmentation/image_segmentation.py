@@ -132,11 +132,14 @@ class ImageSegmenter:
         """Compute the Adjacency and Degree matrices for the image graph."""
         A = sparse.lil_matrix((self.height * self.width, self.height * self.width))
         D = np.zeros(self.height * self.width)
+
+        # Cycle through computing neighbors and distances and use those to build D and A matrices
         for i in range(self.height * self.width):
             neighbors, distances = get_neighbors(i, r, self.height, self.width)
-            D[i] = self.brightness[i]
-            A[i, neighbors] = math.pow(math.e, (-abs(self.brightness[i] - self.brightness[neighbors]) / sigma_B2 - distances / sigma_X2))
-        D = np.sum(A, axis=1)
+            # D[i] = self.brightness[i]
+            weights = np.exp((-abs(self.brightness[i] - self.brightness[neighbors]) / sigma_B2 - distances / sigma_X2))
+            A[i, neighbors] = weights
+            D[i] = sum(weights)
 
         A = sparse.csc_matrix(A)
         return A, D
@@ -144,12 +147,49 @@ class ImageSegmenter:
     # Problem 5
     def cut(self, A, D):
         """Compute the boolean mask that segments the image."""
-        raise NotImplementedError("Problem 5 Incomplete")
+        # Compute the matrix for the boolean mask
+        L = sparse.csgraph.laplacian(A)
+        D_half = sparse.diags(D ** -0.5)
+        res = D_half @ L @ D_half
+
+        # Compute the eigenvectors for D^(1/2)*L*D^(1/2)
+        eig = sparse.linalg.eigsh(res, which="SM", k=2)[1][:, 1]
+        eig = eig.reshape((self.height, self.width))
+        mask = eig > 0
+        return mask
 
     # Problem 6
     def segment(self, r=5., sigma_B=.02, sigma_X=3.):
         """Display the original image and its segments."""
-        raise NotImplementedError("Problem 6 Incomplete")
+
+        # Generate the mask using previous functions
+        A, D = self.adjacency(r, sigma_B, sigma_X)
+        mask = self.cut(A, D)
+        if len(self.image.shape) == 3:
+            mask = np.dstack([mask, mask, mask])
+
+        # Plot the original image
+        plt.subplot(131)
+        if len(self.image.shape) == 3:
+            plt.imshow(self.image)
+        else:
+            plt.imshow(self.image, cmap="gray")
+        plt.axis("off")
+        plt.title("Original")
+
+        # Plot the Positive image
+        plt.subplot(132)
+        plt.imshow(mask * self.image)
+        plt.axis("off")
+        plt.title("Positive")
+
+        # Plot the Negative image
+        plt.subplot(133)
+        plt.imshow(-(mask - 1) * self.image)
+        plt.axis("off")
+        plt.title("Negative")
+        plt.suptitle("Image Segmentation")
+        plt.show()
 
 
 # if __name__ == '__main__':
@@ -184,3 +224,7 @@ def test_prob_3():
 def test_prob_4():
     img_seg = ImageSegmenter("dream.png")
     img_seg.adjacency()
+
+def test_prob_6():
+    img_seg = ImageSegmenter("dream.png")
+    img_seg.segment()
