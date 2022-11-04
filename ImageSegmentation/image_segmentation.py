@@ -8,7 +8,7 @@ import math
 
 import numpy as np
 from scipy import linalg as la
-from imageio.v2 import imread
+from imageio import imread
 from matplotlib import pyplot as plt
 from scipy import sparse
 
