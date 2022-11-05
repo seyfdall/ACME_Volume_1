@@ -44,16 +44,6 @@ def connectivity(A, tol=1e-8):
     L = laplacian(A)
     eigs = np.real(la.eigvals(L))
     eigs.sort()
-    eig_vals = list(eigs.copy())
-
-    # Compute the connectivity of the graph
-    j = 0
-    for i in range(len(eig_vals)):
-        if eig_vals[j] < tol:
-            eig_vals.remove(eig_vals[j])
-            j -= 1
-        j += 1
-    alg_con = eig_vals[0]
 
     # Compute the number of connected components of the graph
     connected = 0
@@ -61,7 +51,7 @@ def connectivity(A, tol=1e-8):
         if eig < tol:
             connected += 1
 
-    return connected, alg_con
+    return connected, eigs[1]
 
 
 # Helper function for problem 4.
@@ -110,8 +100,10 @@ class ImageSegmenter:
         # If image is rgb compute brightness with scaled
         if len(self.image.shape) == 3:
             self.brightness = self.scaled.mean(axis=2)
+            self.cmap = None
         else:
-            self.brightness = self.image
+            self.brightness = self.scaled
+            self.cmap = "gray"
         self.brightness = np.ravel(self.brightness)
         self.height = len(self.image)
         self.width = len(self.image[0])
@@ -131,13 +123,12 @@ class ImageSegmenter:
     def adjacency(self, r=5., sigma_B2=.02, sigma_X2=3.):
         """Compute the Adjacency and Degree matrices for the image graph."""
         A = sparse.lil_matrix((self.height * self.width, self.height * self.width))
-        D = np.zeros(self.height * self.width)
+        D = np.empty(self.height * self.width)
 
         # Cycle through computing neighbors and distances and use those to build D and A matrices
         for i in range(self.height * self.width):
             neighbors, distances = get_neighbors(i, r, self.height, self.width)
-            # D[i] = self.brightness[i]
-            weights = np.exp((-abs(self.brightness[i] - self.brightness[neighbors]) / sigma_B2 - distances / sigma_X2))
+            weights = np.exp((-np.abs(self.brightness[i] - self.brightness[neighbors]) / sigma_B2 - distances / sigma_X2))
             A[i, neighbors] = weights
             D[i] = sum(weights)
 
@@ -170,22 +161,19 @@ class ImageSegmenter:
 
         # Plot the original image
         plt.subplot(131)
-        if len(self.image.shape) == 3:
-            plt.imshow(self.image)
-        else:
-            plt.imshow(self.image, cmap="gray")
+        plt.imshow(self.image, cmap=self.cmap)
         plt.axis("off")
         plt.title("Original")
 
         # Plot the Positive image
         plt.subplot(132)
-        plt.imshow(mask * self.image)
+        plt.imshow(mask * self.image, cmap=self.cmap)
         plt.axis("off")
         plt.title("Positive")
 
         # Plot the Negative image
         plt.subplot(133)
-        plt.imshow(-(mask - 1) * self.image)
+        plt.imshow(-(mask - 1) * self.image, cmap=self.cmap)
         plt.axis("off")
         plt.title("Negative")
         plt.suptitle("Image Segmentation")
@@ -222,8 +210,9 @@ def test_prob_3():
 
 
 def test_prob_4():
-    img_seg = ImageSegmenter("dream.png")
+    img_seg = ImageSegmenter("dream_gray.png")
     img_seg.adjacency()
+
 
 def test_prob_6():
     img_seg = ImageSegmenter("dream.png")
