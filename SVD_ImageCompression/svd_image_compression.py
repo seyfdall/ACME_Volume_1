@@ -1,6 +1,13 @@
 """Volume 1: The SVD and Image Compression."""
 
 
+import numpy as np
+from scipy import linalg as la
+from imageio import imread
+from matplotlib import pyplot as plt
+from scipy import sparse
+
+
 # Problem 1
 def compact_svd(A, tol=1e-6):
     """Compute the truncated SVD of A.
@@ -14,7 +21,23 @@ def compact_svd(A, tol=1e-6):
         ((r,) ndarray): The singular values of A as a 1-D array.
         ((r,n) ndarray): The orthonormal matrix V^H in the SVD.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+
+    # Create AHA and eigenvalues/vectors - and I said HEYEAHYAEAHYAEAHYAEAH HEYEAHYEAH
+    A_herm = A.conj().T
+    eigenvalues, eigenvectors = la.eig(A_herm @ A)
+    singular_vals = eigenvalues ** 0.5
+
+    # Sort everything by singular values
+    order = np.argsort(singular_vals)[::-1]
+    eigenvectors = eigenvectors[:, order]
+    singular_vals = singular_vals[order]
+
+    # Get number of positive singular values and construct appropriate matrices
+    r = np.sum(singular_vals > tol)
+    sig = singular_vals[:r]
+    V = eigenvectors[:, :r]
+    U = np.dot(A, V) / sig
+    return U, sig, V.conj().T
 
 
 # Problem 2
@@ -22,7 +45,52 @@ def visualize_svd(A):
     """Plot the effect of the SVD of A as a sequence of linear transformations
     on the unit circle and the two standard basis vectors.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    # Compute space, E and S
+    space = np.linspace(0, 2 * np.pi, 200)
+    E = np.array([[1, 0, 0], [0, 0, 1]])
+    S = np.row_stack((np.cos(space), np.sin(space)))
+
+    # Compute the SVD
+    U, s, Vh = la.svd(A)
+    Sig = np.diag(s)
+
+    # (a) S subplot
+    plt.subplot(221)
+    plt.plot(S[0, :], S[1, :])
+    plt.plot(E[0, :], E[1, :])
+    plt.title("(a) S")
+    plt.axis("equal")
+
+    # (b) VhS subplot
+    VhS = np.dot(Vh, S)
+    VhE = np.dot(Vh, E)
+    plt.subplot(222)
+    plt.plot(VhS[0, :], VhS[1, :])
+    plt.plot(VhE[0, :], VhE[1, :])
+    plt.title("(b) VhS")
+    plt.axis("equal")
+
+    # (c) SigVhS subplot
+    SigVhS = np.dot(Sig, VhS)
+    SigVhE = np.dot(np.dot(Sig, Vh), E)
+    plt.subplot(223)
+    plt.plot(SigVhS[0, :], SigVhS[1, :])
+    plt.plot(SigVhE[0, :], SigVhE[1, :])
+    plt.title("(c) SigVhS")
+    plt.axis("equal")
+
+    # (b) USigVhS subplot
+    USigVhS = np.dot(U, SigVhS)
+    USigVhE = np.dot(np.dot(U, np.dot(Sig, Vh)), E)
+    plt.subplot(224)
+    plt.plot(USigVhS[0, :], USigVhS[1, :])
+    plt.plot(USigVhE[0, :], USigVhE[1, :])
+    plt.title("(d) USigVhS")
+    plt.axis("equal")
+
+    plt.suptitle("Visualizing the SVD")
+    plt.tight_layout()
+    plt.show()
 
 
 # Problem 3
@@ -39,7 +107,19 @@ def svd_approx(A, s):
         ((m,n), ndarray) The best rank s approximation of A.
         (int) The number of entries needed to store the truncated SVD.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    # Raise error if s is greater than r
+    if s > np.linalg.matrix_rank(A):
+        raise ValueError("s is greater than the number of nonzero singular values")
+
+    # Compute svd_approx
+    U, S, Vh = la.svd(A)
+    U_hat = U[:, :s]
+    S_hat = S[:s, :s]
+    Vh_hat = Vh[:s, :] # e i e i o
+
+    # Compute A_s approximation
+    A_s = U_hat @ S_hat @ Vh_hat
+    return A_s, U_hat.size + S_hat.size + Vh_hat.size
 
 
 # Problem 4
@@ -57,7 +137,26 @@ def lowest_rank_approx(A, err):
             ||A - A_s||_2 < err.
         (int) The number of entries needed to store the truncated SVD.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    U, S, Vh = la.svd(A)
+
+    # Find the right singular value representing the error
+    if err <= S[-1]:
+        raise ValueError("Epsilon is less than or equal to the smallest singular value of A")
+
+    # Go back through problem 3 and compute the A_s approximation
+    s = 0
+    while S[s] > err:
+        s += 1
+
+    # Compute svd_approx
+    U, S, Vh = la.svd(A)
+    U_hat = U[:, :s]
+    S_hat = S[:s, :s]
+    Vh_hat = Vh[:s, :]  # e i e i o
+
+    # Compute A_s approximation
+    A_s = U_hat @ S_hat @ Vh_hat
+    return A_s, U_hat.size + S_hat.size + Vh_hat.size
 
 
 # Problem 5
@@ -72,3 +171,18 @@ def compress_image(filename, s):
         s (int): Rank of new image.
     """
     raise NotImplementedError("Problem 5 Incomplete")
+
+
+def test_compact_svd():
+    A = np.random.random((10, 5))
+    U, s, Vh = compact_svd(A)
+    print(U.shape, s.shape, Vh.shape)
+    print(U.T @ U)
+    print(np.allclose(U.T @ U, np.identity(5)))
+    print(np.allclose(U @ np.diag(s) @ Vh, A))
+    print(np.linalg.matrix_rank(A) == len(s))
+
+
+def test_visualize_svd():
+    A = np.array([[3, 1], [1, 3]])
+    visualize_svd(A)
