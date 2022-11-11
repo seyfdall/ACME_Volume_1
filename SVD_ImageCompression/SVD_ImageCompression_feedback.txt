@@ -1,0 +1,56 @@
+11/11/22 11:22
+
+Problem 1 (10 points):
+Score += 10
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (5 points):
+IndexError: too many indices for array: array is 1-dimensional, but 2 were indexed
+
+Problem 4 (5 points):
+IndexError: too many indices for array: array is 1-dimensional, but 2 were indexed
+
+Problem 5 (15 points):
+NotImplementedError: Problem 5 Incomplete
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 25/50 = 50.0%
+
+
+Comments:
+	Great start! 
+
+-------------------------------------------------------------------------------
+
+11/11/22 11:36
+
+Problem 1 (10 points):
+Score += 10
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (5 points):
+IndexError: too many indices for array: array is 1-dimensional, but 2 were indexed
+
+Problem 4 (5 points):
+IndexError: too many indices for array: array is 1-dimensional, but 2 were indexed
+
+Problem 5 (15 points):
+NotImplementedError: Problem 5 Incomplete
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 25/50 = 50.0%
+
+
+Comments:
+	Great start! Let me know if you have questions!
+
+-------------------------------------------------------------------------------
+
