@@ -114,11 +114,11 @@ def svd_approx(A, s):
     # Compute svd_approx
     U, S, Vh = la.svd(A)
     U_hat = U[:, :s]
-    S_hat = S[:s, :s]
+    S_hat = S[:s]
     Vh_hat = Vh[:s, :] # e i e i o
 
     # Compute A_s approximation
-    A_s = U_hat @ S_hat @ Vh_hat
+    A_s = U_hat * S_hat @ Vh_hat
     return A_s, U_hat.size + S_hat.size + Vh_hat.size
 
 
@@ -151,11 +151,11 @@ def lowest_rank_approx(A, err):
     # Compute svd_approx
     U, S, Vh = la.svd(A)
     U_hat = U[:, :s]
-    S_hat = S[:s, :s]
+    S_hat = S[:s]
     Vh_hat = Vh[:s, :]  # e i e i o
 
     # Compute A_s approximation
-    A_s = U_hat @ S_hat @ Vh_hat
+    A_s = U_hat * S_hat @ Vh_hat
     return A_s, U_hat.size + S_hat.size + Vh_hat.size
 
 
@@ -170,11 +170,36 @@ def compress_image(filename, s):
         filename (str): Image file path.
         s (int): Rank of new image.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    image = imread(filename)
+
+    # Calculate SVD Approximation
+    image_s, s_s = svd_approx(image, s)
+
+
+    cmap = None
+    if len(image.shape) == 3:
+        cmap = "gray"
+
+    plt.subplot(121)
+    plt.imshow(image, cmap=cmap)
+    plt.axis("off")
+    plt.title("Original")
+
+    plt.subplot(122)
+    plt.imshow(image_s, cmap=cmap)
+    plt.axis("off")
+    plt.title("Approximate")
+
+    plt.suptitle(str(s - s_s) + " difference in entries")
+    plt.show()
 
 
 def test_compact_svd():
-    A = np.random.random((10, 5))
+    A = np.array([[5, 1, 7, 5, 2, 1, 6, 9, 1, 8, ],
+                  [2, 9, 8, 8, 5, 7, 5, 3, 9, 8, ],
+                  [8, 8, 4, 6, 9, 2, 9, 2, 6, 4, ],
+                  [2, 8, 2, 5, 1, 7, 6, 9, 2, 5, ],
+                  [9, 4, 6, 5, 6, 9, 8, 4, 9, 3, ]])
     U, s, Vh = compact_svd(A)
     print(U.shape, s.shape, Vh.shape)
     print(U.T @ U)
@@ -183,6 +208,32 @@ def test_compact_svd():
     print(np.linalg.matrix_rank(A) == len(s))
 
 
+def test_svd_approx():
+    A = np.array([[5, 1, 7, 5, 2, 1, 6, 9, 1, 8, ],
+                  [2, 9, 8, 8, 5, 7, 5, 3, 9, 8, ],
+                  [8, 8, 4, 6, 9, 2, 9, 2, 6, 4, ],
+                  [2, 8, 2, 5, 1, 7, 6, 9, 2, 5, ],
+                  [9, 4, 6, 5, 6, 9, 8, 4, 9, 3, ]])
+    A_s, entry_count = svd_approx(A, 3)
+    print(A_s)
+    print(entry_count)
+
+
+def test_lowest_rank_approx():
+    A = np.array([[5, 1, 7, 5, 2, 1, 6, 9, 1, 8, ],
+                  [2, 9, 8, 8, 5, 7, 5, 3, 9, 8, ],
+                  [8, 8, 4, 6, 9, 2, 9, 2, 6, 4, ],
+                  [2, 8, 2, 5, 1, 7, 6, 9, 2, 5, ],
+                  [9, 4, 6, 5, 6, 9, 8, 4, 9, 3, ]])
+    A_s, entry_count = lowest_rank_approx(A, 7)
+    print(A_s)
+    print(entry_count)
+
+
 def test_visualize_svd():
     A = np.array([[3, 1], [1, 3]])
     visualize_svd(A)
+
+
+def test_compress_image():
+    compress_image("hubble_gray.jpg", 20)
