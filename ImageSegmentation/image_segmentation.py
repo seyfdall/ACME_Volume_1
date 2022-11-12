@@ -205,12 +205,12 @@ def test_prob_2():
 
 
 def test_prob_3():
-    img_seg = ImageSegmenter("dream_gray.png")
+    img_seg = ImageSegmenter("dream.png")
     img_seg.show_original()
 
 
 def test_prob_4():
-    img_seg = ImageSegmenter("dream_gray.png")
+    img_seg = ImageSegmenter("dream.png")
     img_seg.adjacency()
 
 
