@@ -170,28 +170,45 @@ def compress_image(filename, s):
         filename (str): Image file path.
         s (int): Rank of new image.
     """
-    image = imread(filename)
+    image = imread(filename) / 255
 
-    # Calculate SVD Approximation
-    image_s, s_s = svd_approx(image, s)
-
-
-    cmap = None
+    # Display for the color image
     if len(image.shape) == 3:
-        cmap = "gray"
+        red_image, r_s = svd_approx(image[:, :, 0], s)
+        green_image, g_s = svd_approx(image[:, :, 1], s)
+        blue_image, b_s = svd_approx(image[:, :, 2], s)
 
-    plt.subplot(121)
-    plt.imshow(image, cmap=cmap)
-    plt.axis("off")
-    plt.title("Original")
+        image_s = np.dstack((red_image, green_image, blue_image))
 
-    plt.subplot(122)
-    plt.imshow(image_s, cmap=cmap)
-    plt.axis("off")
-    plt.title("Approximate")
+        plt.subplot(121)
+        plt.imshow(image)
+        plt.axis("off")
+        plt.title("Original image")
 
-    plt.suptitle(str(s - s_s) + " difference in entries")
-    plt.show()
+        plt.subplot(122)
+        plt.imshow(image_s)
+        plt.axis("off")
+        plt.title("Rank " + str(s) + " Approximation")
+
+        plt.suptitle("Approximation can be stored with " + str(image.size - (r_s + g_s + b_s)) + " fewer entries than the original")
+        plt.show()
+
+    # Display for the grayscale image
+    else:
+        image_s, s_s = svd_approx(image, s)
+
+        plt.subplot(121)
+        plt.imshow(image, cmap="gray")
+        plt.axis("off")
+        plt.title("Original image")
+
+        plt.subplot(122)
+        plt.imshow(image_s, cmap="gray")
+        plt.axis("off")
+        plt.title("Rank " + str(s) + " Approximation")
+
+        plt.suptitle("Approximation can be stored with " + str(image.size - s_s) + " fewer entries than the original")
+        plt.show()
 
 
 def test_compact_svd():
@@ -236,4 +253,4 @@ def test_visualize_svd():
 
 
 def test_compress_image():
-    compress_image("hubble_gray.jpg", 20)
+    compress_image("hubble_gray.jpg", 45)
