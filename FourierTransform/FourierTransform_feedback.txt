@@ -1,0 +1,70 @@
+12/01/22 20:44
+
+Question 1 (5 points):
+Score += 5
+
+Question 2 (5 points):
+Score += 5
+
+Question 3 (5 points):
+Score += 5
+
+Question 4 (5 points):
+Score += 5
+
+Question 5 (5 points):
+Nice, now make sure it prints "True" if its true
+Score += 3
+
+Question 6 (10 points):
+Score += 0
+
+Question 7 (5 points):
+Score += 0
+
+Question 8  (5 points):
+Score += 0
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 28/50 = 56.0%
+
+-------------------------------------------------------------------------------
+
+12/06/22 09:57
+
+Question 1 (5 points):
+Score += 5
+
+Question 2 (5 points):
+Score += 5
+
+Question 3 (5 points):
+Score += 5
+
+Question 4 (5 points):
+Score += 5
+
+Question 5 (5 points):
+Score += 5
+
+Question 6 (10 points):
+You forgot to time them
+Score += 6
+
+Question 7 (5 points):
+Score += 5
+
+Question 8  (5 points):
+Score += 5
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 46/50 = 92.0%
+
+Great job!
+
+-------------------------------------------------------------------------------
+
