@@ -4,6 +4,8 @@
 <Class> 347 001
 <Date> 1/17/2023
 """
+from time import perf_counter
+
 import numpy as np
 import sympy as sy
 import matplotlib.pyplot as plt
@@ -173,4 +175,4 @@ def prob7():
 # def prob1_test():
 # prob3(20)
 # prob4()
-prob6()
+# prob6()
