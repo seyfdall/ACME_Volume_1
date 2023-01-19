@@ -108,7 +108,7 @@ def prob5():
     ])
 
     # Find the characteristic polynomial and solve for the eigenvalues
-    char_poly = sy.det(A - sy.eye(3) * lambdy)
+    char_poly = sy.deft(A - sy.eye(3) * lambdy)
     eigs = sy.solve(char_poly, lambdy)
 
     # Construct the map of eigenvalues to their eigenvectors
@@ -136,18 +136,22 @@ def prob6():
         (set): the local minima.
         (set): the local maxima.
     """
+    # Set symbols
     x = sy.symbols('x')
     poly = 2*x**6 - 51*x**4 + 48*x**3 + 312*x**2 - 576*x -100
     lamb_poly = sy.lambdify(x, poly)
 
+    # Find single and double derivatives
     der_poly = sy.diff(poly, x)
     critical_points = sy.solve(der_poly, x)
     der_2_poly = sy.diff(der_poly, x)
 
+    # Find the critical points and differentiate them
     lamb_der_2_poly = sy.lambdify(x, der_2_poly, 'numpy')
     maxima = np.array([point for point in critical_points if lamb_der_2_poly(point) < 0])
     minima = np.array([point for point in critical_points if lamb_der_2_poly(point) > 0])
 
+    # Plot the function with its different critical points
     domain = np.linspace(-5, 5, 200)
     plt.plot(domain, lamb_poly(domain), label="p(x)")
     plt.plot(maxima, lamb_poly(maxima), 'bo', label="maxima")
@@ -168,11 +172,33 @@ def prob7():
     Returns:
         (float): the integral of f over the sphere of radius 2.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    # Define the function f(x,y,z)
+    x, y, z, r = sy.symbols('x, y, z, r')
+    f = (x**2 + y**2 + z**2)**2
 
+    # Define the matrix function h
+    row, theta, phi = sy.symbols('row, theta, phi')
+    h = sy.Matrix([
+        row*sy.sin(phi)*sy.cos(theta),
+        row*sy.sin(phi)*sy.sin(theta),
+        row*sy.cos(phi)
+    ])
 
-# Test Problem 1
-# def prob1_test():
-# prob3(20)
-# prob4()
-# prob6()
+    # Define the Jacobian
+    J = h.jacobian([row, theta, phi])
+
+    # Define the integral
+    f = sy.simplify(f.subs([(x, h[0]), (y, h[1]), (z, h[2])]))
+    f_dv = sy.integrate(f * (-J.det()), (row, 0, r), (theta, 0, 2*np.pi), (phi, 0, np.pi))
+
+    # Simplify and lambdify the integral
+    f_dv = sy.lambdify(r, sy.simplify(f_dv))
+
+    # Plot the integral for r in [0, 3]
+    domain = np.linspace(0, 3, 100)
+    plt.plot(domain, f_dv(domain))
+    plt.title("r in [0, 3]")
+    plt.show()
+
+    return f_dv(2)
+
