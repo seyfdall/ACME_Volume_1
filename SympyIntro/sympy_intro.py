@@ -108,7 +108,7 @@ def prob5():
     ])
 
     # Find the characteristic polynomial and solve for the eigenvalues
-    char_poly = sy.deft(A - sy.eye(3) * lambdy)
+    char_poly = sy.det(A - sy.eye(3) * lambdy)
     eigs = sy.solve(char_poly, lambdy)
 
     # Construct the map of eigenvalues to their eigenvectors
@@ -185,11 +185,11 @@ def prob7():
     ])
 
     # Define the Jacobian
-    J = h.jacobian([row, theta, phi])
+    J = sy.simplify(h.jacobian([row, theta, phi]))
 
     # Define the integral
-    f = sy.simplify(f.subs([(x, h[0]), (y, h[1]), (z, h[2])]))
-    f_dv = sy.integrate(f * (-J.det()), (row, 0, r), (theta, 0, 2*np.pi), (phi, 0, np.pi))
+    f = f.subs([(x, h[0]), (y, h[1]), (z, h[2])])
+    f_dv = sy.integrate(f * (-J.det()), (row, 0, r), (theta, 0, 2*sy.pi), (phi, 0, sy.pi))
 
     # Simplify and lambdify the integral
     f_dv = sy.lambdify(r, sy.simplify(f_dv))
@@ -200,5 +200,6 @@ def prob7():
     plt.title("r in [0, 3]")
     plt.show()
 
-    return f_dv(2)
+    print(f_dv(3))
 
+    return f_dv(2)
