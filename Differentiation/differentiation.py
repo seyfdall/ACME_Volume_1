@@ -1,41 +1,158 @@
 # differentiation.py
 """Volume 1: Differentiation.
-<Name>
-<Class>
-<Date>
+<Name> Dallin Seyfried
+<Class> 323 002
+<Date> 1/24/2023
 """
+
+import sympy as sy
+from matplotlib import pyplot as plt
+import numpy as np
+
+
+# Define a function f globally
+x = sy.symbols('x')
+f = (sy.sin(x) + 1) ** sy.sin(sy.cos(x))
+f_lamb = sy.lambdify(x, f)
 
 
 # Problem 1
 def prob1():
     """Return the derivative of (sin(x) + 1)^sin(cos(x)) using SymPy."""
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Setup function and its derivative
+    f_prime = sy.diff(f, x)
+    f_prime_lamb = sy.lambdify(x, f_prime)
+    return f_prime_lamb
+
+
+# Test problem 1
+def prob1_test():
+    f_prime_lamb = prob1()
+
+    # Plot the function and its derivative
+    domain = np.linspace(-np.pi, np.pi, 100)
+    ax = plt.gca()
+    ax.spines["bottom"].set_position("zero")
+    plt.plot(domain, f_lamb(domain), label="Original")
+    plt.plot(domain, f_prime_lamb(domain), label="Derivative")
+    plt.legend()
+    plt.title("Problem 1")
+    plt.show()
 
 
 # Problem 2
 def fdq1(f, x, h=1e-5):
     """Calculate the first order forward difference quotient of f at x."""
-    raise NotImplementedError("Problem 2 Incomplete")
+    return (f(x + h) - f(x)) / h
+
+
+# Test fdq1
+def fdq1_test():
+    # Plot the function and its derivative
+    domain = np.linspace(-np.pi, np.pi, 100)
+    range = fdq1(f_lamb, np.linspace(-np.pi, np.pi, 100))
+    ax = plt.gca()
+    ax.spines["bottom"].set_position("zero")
+    plt.plot(domain, f_lamb(domain), label="Original")
+    plt.plot(domain, range, label="Derivative Approximation")
+    plt.legend()
+    plt.title("Problem fdq1")
+    plt.show()
+
 
 def fdq2(f, x, h=1e-5):
     """Calculate the second order forward difference quotient of f at x."""
-    raise NotImplementedError("Problem 2 Incomplete")
+    return (-3*f(x) + 4*f(x+h) - f(x+2*h)) / (2*h)
+
+
+# Test fdq2
+def fdq2_test():
+    # Plot the function and its derivative
+    domain = np.linspace(-np.pi, np.pi, 100)
+    range = fdq2(f_lamb, np.linspace(-np.pi, np.pi, 100))
+    ax = plt.gca()
+    ax.spines["bottom"].set_position("zero")
+    plt.plot(domain, f_lamb(domain), label="Original")
+    plt.plot(domain, range, label="Derivative Approximation")
+    plt.legend()
+    plt.title("Problem fdq2")
+    plt.show()
+
 
 def bdq1(f, x, h=1e-5):
     """Calculate the first order backward difference quotient of f at x."""
-    raise NotImplementedError("Problem 2 Incomplete")
+    return (f(x) - f(x - h)) / h
+
+
+# Test bdq1
+def bdq1_test():
+    # Plot the function and its derivative
+    domain = np.linspace(-np.pi, np.pi, 100)
+    range = bdq1(f_lamb, np.linspace(-np.pi, np.pi, 100))
+    ax = plt.gca()
+    ax.spines["bottom"].set_position("zero")
+    plt.plot(domain, f_lamb(domain), label="Original")
+    plt.plot(domain, range, label="Derivative Approximation")
+    plt.legend()
+    plt.title("Problem bdq1")
+    plt.show()
+
 
 def bdq2(f, x, h=1e-5):
     """Calculate the second order backward difference quotient of f at x."""
-    raise NotImplementedError("Problem 2 Incomplete")
+    return (3*f(x) - 4*f(x-h) + f(x-2*h)) / (2*h)
+
+
+# Test bdq2
+def bdq2_test():
+    # Plot the function and its derivative
+    domain = np.linspace(-np.pi, np.pi, 100)
+    range = bdq2(f_lamb, np.linspace(-np.pi, np.pi, 100))
+    ax = plt.gca()
+    ax.spines["bottom"].set_position("zero")
+    plt.plot(domain, f_lamb(domain), label="Original")
+    plt.plot(domain, range, label="Derivative Approximation")
+    plt.legend()
+    plt.title("Problem bdq2")
+    plt.show()
+
 
 def cdq2(f, x, h=1e-5):
     """Calculate the second order centered difference quotient of f at x."""
-    raise NotImplementedError("Problem 2 Incomplete")
+    return (f(x+h) - f(x-h)) / (2*h)
+
+
+# Test cdq2
+def cdq2_test():
+    # Plot the function and its derivative
+    domain = np.linspace(-np.pi, np.pi, 100)
+    range = cdq2(f_lamb, np.linspace(-np.pi, np.pi, 100))
+    ax = plt.gca()
+    ax.spines["bottom"].set_position("zero")
+    plt.plot(domain, f_lamb(domain), label="Original")
+    plt.plot(domain, range, label="Derivative Approximation")
+    plt.legend()
+    plt.title("Problem cdq2")
+    plt.show()
+
 
 def cdq4(f, x, h=1e-5):
     """Calculate the fourth order centered difference quotient of f at x."""
-    raise NotImplementedError("Problem 2 Incomplete")
+    return (f(x-2*h) - 8*f(x-h) + 8*f(x+h) - f(x+2*h)) / (12*h)
+
+
+# Test cdq4
+def cdq4_test():
+    # Plot the function and its derivative
+    domain = np.linspace(-np.pi, np.pi, 100)
+    range = cdq4(f_lamb, np.linspace(-np.pi, np.pi, 100))
+    ax = plt.gca()
+    ax.spines["bottom"].set_position("zero")
+    plt.plot(domain, f_lamb(domain), label="Original")
+    plt.plot(domain, range, label="Derivative Approximation")
+    plt.legend()
+    plt.title("Problem cdq4")
+    plt.show()
 
 
 # Problem 3
@@ -49,7 +166,29 @@ def prob3(x0):
     Parameters:
         x0 (float): The point where the derivative is being approximated.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    f_prime_lamb = prob1()
+    exact = f_prime_lamb(x0)
+    domain = np.logspace(-8, 0, 9)
+
+    # Calculate errors
+    fdq1_errors = np.abs(np.array([fdq1(f_lamb, x0, domain[i]) for i in range(len(domain))]) - exact)
+    fdq2_errors = np.abs(np.array([fdq2(f_lamb, x0, domain[i]) for i in range(len(domain))]) - exact)
+    bdq1_errors = np.abs(np.array([bdq1(f_lamb, x0, domain[i]) for i in range(len(domain))]) - exact)
+    bdq2_errors = np.abs(np.array([bdq2(f_lamb, x0, domain[i]) for i in range(len(domain))]) - exact)
+    cdq2_errors = np.abs(np.array([cdq2(f_lamb, x0, domain[i]) for i in range(len(domain))]) - exact)
+    cdq4_errors = np.abs(np.array([cdq4(f_lamb, x0, domain[i]) for i in range(len(domain))]) - exact)
+
+    # Plot the errors
+    plt.loglog(domain, fdq1_errors, label="fdq1 errors")
+    plt.loglog(domain, fdq2_errors, label="fdq1 errors")
+    plt.loglog(domain, bdq1_errors, label="bdq1 errors")
+    plt.loglog(domain, bdq2_errors, label="bdq2 errors")
+    plt.loglog(domain, cdq2_errors, label="cdq2 errors")
+    plt.loglog(domain, cdq4_errors, label="cdq4 errors")
+    plt.title("Problem 3")
+    plt.xlabel("h")
+    plt.ylabel("Absolute Error")
+    plt.show()
 
 
 # Problem 4
@@ -76,7 +215,29 @@ def prob4():
     difference quotient for t=8,9,...,13. Return the values of the speed at
     each t.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    # functions for finding coordinates with distance = 500 m
+    find_x_coords = lambda a, b: 500 * np.tan(b) / (np.tan(b) - np.tan(a))
+    find_y_coords = lambda a, b: 500 * np.tan(b) * np.tan(a) / (np.tan(b) - np.tan(a))
+
+    data = np.load('plane.npy')
+
+    alpha = np.deg2rad(data[:, 1])
+    beta = np.deg2rad(data[:, 2])
+
+    x_coords = find_x_coords(alpha, beta)
+    y_coords = find_y_coords(alpha, beta)
+
+    # First order forward difference quotient
+    x_t_prime = [x_coords[1] - x_coords[0]]
+
+    # First order backward difference quotient
+    x_t_prime.append(x_coords[i] - x_coords[i - 1] for i in range(1, len(x_coords) - 1))
+
+    # Second order centered difference quotient
+
+    pass
+
+prob4()
 
 
 # Problem 5
