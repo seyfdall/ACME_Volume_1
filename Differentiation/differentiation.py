@@ -4,10 +4,15 @@
 <Class> 323 002
 <Date> 1/24/2023
 """
+import time
 
 import sympy as sy
 from matplotlib import pyplot as plt
 import numpy as np
+import random
+from jax import numpy as jnp
+from jax import grad
+import time
 
 
 # Define a function f globally
@@ -229,15 +234,20 @@ def prob4():
 
     # First order forward difference quotient
     x_t_prime = [x_coords[1] - x_coords[0]]
-
-    # First order backward difference quotient
-    x_t_prime.append(x_coords[i] - x_coords[i - 1] for i in range(1, len(x_coords) - 1))
+    y_t_prime = [y_coords[1] - y_coords[0]]
 
     # Second order centered difference quotient
+    x_t_next = [(x_coords[i + 1] - x_coords[i - 1]) / 2 for i in range(1, len(x_coords) - 1)]
+    y_t_next = [(y_coords[i + 1] - y_coords[i - 1]) / 2 for i in range(1, len(y_coords) - 1)]
+    for i in range(len(x_t_next)):
+        x_t_prime.append(x_t_next[i])
+        y_t_prime.append(y_t_next[i])
 
-    pass
+    # First order backward difference quotient
+    x_t_prime.append(x_coords[-1] - x_coords[-2])
+    y_t_prime.append(y_coords[-1] - y_coords[-2])
 
-prob4()
+    return [(x_t_prime[i]**2 + y_t_prime[i]**2)**0.5 for i in range(len(x_t_prime))]
 
 
 # Problem 5
@@ -249,14 +259,27 @@ def jacobian_cdq2(f, x, h=1e-5):
         f (function): the multidimensional function to differentiate.
             Accepts a NumPy (n,) ndarray and returns an (m,) ndarray.
             For example, f(x,y) = [x+y, xy**2] could be implemented as follows.
-            >>> f = lambda x: np.array([x[0] + x[1], x[0] * x[1]**2])
+            f = lambda x: np.array([x[0] + x[1], x[0] * x[1]**2])
         x ((n,) ndarray): the point in R^n at which to compute the Jacobian.
         h (float): the step size in the finite difference quotient.
 
     Returns:
         ((m,n) ndarray) the Jacobian matrix of f at x.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    # Get dimensions and the identity vectors
+    m = len(f(x))
+    n = len(x)
+    e_mat = np.eye(n)
+
+    # Calculate the Jacobian one row vector at a time
+    jacobian = np.zeros((m, n))
+    for j in range(n):
+        jacobian[:,j] = (f(x + h*e_mat[:,j]) - f(x - h*e_mat[:,j])) / (2*h)
+
+    return jacobian
+
+# f = lambda x: np.array([x[0]**2, x[0]**3 - x[1]])
+# jacobian_cdq2(f, np.array([1, 1]))
 
 
 # Problem 6
@@ -267,14 +290,33 @@ def cheb_poly(x, n):
         x (jax.ndarray): the points to evaluate T_n(x) at.
         n (int): The degree of the polynomial.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    if n == 0:
+        return jnp.ones_like(x)
+    elif n == 1:
+        return x
+    else:
+        # Recurse if n > 1
+        return 2*x*cheb_poly(x, n-1) - cheb_poly(x, n-2)
 
 def prob6():
     """Use JAX and cheb_poly() to create a function for the derivative
     of the Chebyshev polynomials, and use that function to plot the derivatives
     over the domain [-1,1] for n=0,1,2,3,4.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    # Create Domain
+    domain_size = 100
+    domain = jnp.linspace(-1, 1, domain_size, dtype=jnp.float32)
+
+    # Cycle plotting each chebyshev derivative using JAX
+    for n in range(5):
+        T_n = lambda x: cheb_poly(x, n)
+        dT_n = jnp.vectorize(grad(T_n, allow_int=True))
+        plt.subplot(2,3,n+1)
+        plt.plot(domain, dT_n(domain))
+        plt.title(f"dT_{n}")
+
+    plt.tight_layout()
+    plt.show()
 
 
 # Problem 7
@@ -297,4 +339,51 @@ def prob7(N=200):
     with different colors for SymPy, the difference quotient, and JAX.
     For SymPy, assume an absolute error of 1e-18.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    # Set up timers
+    exact_times = [0] * N
+    exact_error = [10 ** (-18)] * N
+    cdq4_times = [0] * N
+    cdq4_error = [0] * N
+    jax_times = [0] * N
+    jax_error = [0] * N
+
+    g = lambda x: (jnp.sin(x) + 1) ** jnp.sin(jnp.cos(x))
+
+    # Cycle N times
+    for n in range(N):
+        x0 = random.random()
+
+        # Measure exact timing using simpy
+        start = time.perf_counter()
+        exact_f_prime = prob1()
+        exact_val = exact_f_prime(x0)
+        end = time.perf_counter()
+        exact_times[n] = end - start
+
+        # Measure cdq4 timing and error
+        start = time.perf_counter()
+        cdq4_val = cdq4(f_lamb, x0)
+        end = time.perf_counter()
+        cdq4_times[n] = end - start
+        cdq4_error[n] = abs(exact_val - cdq4_val)
+
+        # Measure jax timing and error
+        start = time.perf_counter()
+        jax_value = grad(g)(x0)
+        end = time.perf_counter()
+        jax_times[n] = end - start
+        jax_error[n] = abs(exact_val - jax_value)
+
+    # Plot the errors
+    plt.loglog(exact_times, exact_error, alpha=0.2, marker="o", linestyle="None", label="SymPy")
+    plt.loglog(cdq4_times, cdq4_error, alpha=0.2, marker="o", linestyle="None", label="Difference Quotients")
+    plt.loglog(jax_times, jax_error, alpha=0.2, marker="o", linestyle="None", label="JAX")
+    plt.xlabel("Computation Time (seconds)")
+    plt.ylabel("Absolute Error")
+    plt.legend()
+    plt.show()
+
+
+
+
+
