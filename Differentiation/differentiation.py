@@ -364,7 +364,7 @@ def prob7(N=200):
 
         # Measure cdq4 timing and error
         start = time.perf_counter()
-        cdq4_val = cdq4(f_lamb, x0)
+        cdq4_val = cdq4(g, x0)
         end = time.perf_counter()
         cdq4_times[n] = end - start
         cdq4_error[n] = abs(exact_val - cdq4_val)
