@@ -190,6 +190,7 @@ def prob3(x0):
     plt.loglog(domain, bdq2_errors, label="bdq2 errors")
     plt.loglog(domain, cdq2_errors, label="cdq2 errors")
     plt.loglog(domain, cdq4_errors, label="cdq4 errors")
+    plt.legend()
     plt.title("Problem 3")
     plt.xlabel("h")
     plt.ylabel("Absolute Error")
@@ -297,6 +298,7 @@ def cheb_poly(x, n):
     else:
         # Recurse if n > 1
         return 2*x*cheb_poly(x, n-1) - cheb_poly(x, n-2)
+
 
 def prob6():
     """Use JAX and cheb_poly() to create a function for the derivative
