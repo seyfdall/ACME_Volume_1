@@ -190,8 +190,6 @@ def prob6():
                 if np.allclose(vect, np.array([3.75, 0.25])):
                     return np.array([x, y])
 
-print(prob6())
-
 
 # Problem 7
 def plot_basins(f, Df, zeros, domain, res=1000, iters=15):
@@ -207,4 +205,40 @@ def plot_basins(f, Df, zeros, domain, res=1000, iters=15):
             The visualized grid has shape (res, res).
         iters (int): The exact number of times to iterate Newton's method.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    # Construct a mesh grid
+    x_real = np.linspace(domain[0], domain[1], res)
+    x_imag = np.linspace(domain[2], domain[3], res)
+    X_real, X_imag = np.meshgrid(x_real, x_imag)
+    X_0 = X_real + 1j*X_imag
+
+    X_k = X_0
+    # Run Newton's Method
+    for _ in range(iters):
+        X_iter = X_k
+        X_k = X_iter - f(X_iter) / Df(X_iter)
+
+    # Compute res x res array Y
+    Y = np.argmin(np.array([np.abs(X_k - zero) for zero in zeros]), axis=0)
+
+    # Plot and visualize the basins
+    plt.pcolormesh(x_real, x_imag, Y, cmap="brg")
+    plt.title("Basins")
+    plt.show()
+
+# Test Plot Basins
+def plot_basins_test():
+    # Plot x^3 - 1
+    f = lambda x: x**3 - 1
+    Df = lambda x: 3*x**2
+    zeros = np.array([1, -0.5 + 1j*np.sqrt(3)/2, -0.5 - 1j*np.sqrt(3)/2])
+    domain = [-1.5, 1.5, -1.5, 1.5]
+    plot_basins(f, Df, zeros, domain)
+
+    # Plot x^3 - x
+    f = lambda x: x**3 - x
+    Df = lambda x: 3*x**2 - 1
+    zeros = np.array([0, 1, -1])
+    domain = [-1.5, 1.5, -1.5, 1.5]
+    plot_basins(f, Df, zeros, domain)
+
+plot_basins_test()
