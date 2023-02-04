@@ -7,6 +7,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import newton as eye_of_newt
+import scipy.linalg as la
 
 # Problems 1, 3, and 5
 def newton(f, x0, Df, tol=1e-5, maxiter=15, alpha=1.):
@@ -36,8 +37,8 @@ def newton(f, x0, Df, tol=1e-5, maxiter=15, alpha=1.):
         for _ in range(maxiter):
             i += 1
             pre = post
-            post = np.linalg.solve(Df(pre), f(pre))
-            if np.linalg.norm(post - pre) < tol:
+            post = pre - alpha * la.solve(Df(pre), f(pre))
+            if la.norm(post - pre) < tol:
                 converged = True
                 break
     else:
@@ -45,8 +46,8 @@ def newton(f, x0, Df, tol=1e-5, maxiter=15, alpha=1.):
         i = 0
         for _ in range(maxiter):
             i += 1
-            pre = post
             # Including alpha for backtracking
+            pre = post
             post = pre - alpha * f(pre) / Df(pre)
             if np.linalg.norm(post - pre) < tol:
                 converged = True
@@ -61,6 +62,17 @@ def prob1_test():
     Df = lambda x: np.exp(x)
     print(f"Newton: {newton(f, 0.6, Df)}")
     print(f"Scipy: {eye_of_newt(f, 0.6, Df)}")
+
+
+def prob5_test():
+    # f(x,y) = [x - y, x^2 - 3], x0 = [2, 1]
+    f = lambda x: np.array([x[0] - x[1], x[0]**2 - 3])
+    Df = lambda x: np.array([
+        [1, -1],
+        [2*x[0], 0]
+    ])
+    x0 = np.array([2, 1])
+    print(f"Newton: {newton(f, x0, Df)}")
 
 
 def prob3_test():
@@ -143,11 +155,10 @@ def optimal_alpha(f, x0, Df, tol=1e-5, maxiter=15):
     return alphas[min_index]
 
 
-def prob5_test():
+def prob4_test():
     f = lambda x: np.sign(x) * np.power(np.abs(x), 1./3)
     Df = lambda x: np.power(np.abs(x), -2./3) / 3.
     print(optimal_alpha(f,.01,Df)) # should return alpha closer to .3 than .4
-
 
 # Problem 6
 def prob6():
@@ -161,15 +172,25 @@ def prob6():
     Return the intial point as a 1-D NumPy array with 2 entries.
     """
     # Define search space
-    x_search = np.linspace(-0.25, 0, 100, endpoint=False)
-    y_search = np.linspace(0.00001, 0.25, 100)
+    x_search = np.linspace(-0.25, 0, 50)
+    y_search = np.linspace(0, 0.25, 50)
+    tol = 1e-5
 
     # Define f and Df
-
+    f = lambda x: np.array([4. * x[0] * x[1] - x[0], -x[0] * x[1] + 1. - x[1] ** 2.])
+    Df = lambda x: np.array([[4. * x[1] - 1, 4. * x[0]], [-x[1], -x[0] - 2. * x[1]]])
 
     # Search through with alpha = 1 looking for (0, 1) or (0, -1)
+    for x in x_search:
+        for y in y_search:
+            vect, converged, iters = newton(f, np.array([x, y]), Df, alpha=1)
+            if np.allclose(np.abs(vect), np.array([0,1])):
+                # Search through with alpha = 0.55 looking for (3.75, 0.25)
+                vect, converged, iters = newton(f, np.array([x, y]), Df, alpha=0.55)
+                if np.allclose(vect, np.array([3.75, 0.25])):
+                    return np.array([x, y])
 
-    # Search through with alpha = 0.55 looking for (3.75, 0.25
+print(prob6())
 
 
 # Problem 7
