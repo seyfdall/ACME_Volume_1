@@ -9,6 +9,7 @@ import numpy as np
 from scipy.optimize import newton as eye_of_newt
 import scipy.linalg as la
 
+
 # Problems 1, 3, and 5
 def newton(f, x0, Df, tol=1e-5, maxiter=15, alpha=1.):
     """Use Newton's method to approximate a zero of the function f.
@@ -60,8 +61,13 @@ def newton(f, x0, Df, tol=1e-5, maxiter=15, alpha=1.):
 def prob1_test():
     f = lambda x: np.exp(x) - 2
     Df = lambda x: np.exp(x)
-    print(f"Newton: {newton(f, 0.6, Df)}")
-    print(f"Scipy: {eye_of_newt(f, 0.6, Df)}")
+    print(f"Newton: {newton(f, 2.0, Df)}")
+    print(f"Scipy: {eye_of_newt(f, 2.0, Df)}")
+
+    f = lambda x: x**4 - 3
+    Df = lambda x: 4*x**3
+    print(f"Newton: {newton(f, 0.5, Df)}")
+    print(f"Scipy: {eye_of_newt(f, 0.5, Df)}")
 
 
 def prob5_test():
@@ -160,6 +166,7 @@ def prob4_test():
     Df = lambda x: np.power(np.abs(x), -2./3) / 3.
     print(optimal_alpha(f,.01,Df)) # should return alpha closer to .3 than .4
 
+
 # Problem 6
 def prob6():
     """Consider the following Bioremediation system.
@@ -225,6 +232,7 @@ def plot_basins(f, Df, zeros, domain, res=1000, iters=15):
     plt.title("Basins")
     plt.show()
 
+
 # Test Plot Basins
 def plot_basins_test():
     # Plot x^3 - 1
@@ -240,5 +248,3 @@ def plot_basins_test():
     zeros = np.array([0, 1, -1])
     domain = [-1.5, 1.5, -1.5, 1.5]
     plot_basins(f, Df, zeros, domain)
-
-plot_basins_test()
