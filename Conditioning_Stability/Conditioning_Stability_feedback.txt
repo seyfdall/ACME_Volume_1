@@ -4,3 +4,39 @@ conditioning_stability.py has not been modified yet
 
 -------------------------------------------------------------------------------
 
+02/14/23 10:14
+
+Problem 1 (5 points):
+matrix_cond() failed for A a 5x5 singular matrix
+	Correct response: 4.667436801635606e+16
+	Student response: 2.149805919675734e+16
+Score += 3
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (5 points):
+Score += 5
+
+Problem 4 (5 points):
+Score += 5
+
+Problem 5 (10 points):
+Score += 10
+
+Problem 6 (10 points):
+Score += 10
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 48/50 = 96.0%
+
+Great job!
+
+
+Comments:
+	Nice work
+
+-------------------------------------------------------------------------------
+
