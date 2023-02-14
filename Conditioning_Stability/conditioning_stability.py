@@ -51,6 +51,8 @@ def prob2():
     perturbed_roots = np.array([])
     perturbed_coeffs = np.array([])
     h = np.array([])
+    abs_cond = []
+    rel_cond = []
 
     # Perturb the coefficients using the normal distribution and find new roots
     for _ in range(100):
@@ -59,6 +61,11 @@ def prob2():
         h = np.concatenate((h, new_h))
         perturbed_coeffs = np.concatenate((perturbed_coeffs, new_coeffs))
         perturbed_roots = np.concatenate((perturbed_roots, np.roots(np.poly1d(new_coeffs))))
+        new_roots = np.sort(np.roots(np.poly1d(new_coeffs)))
+        k_hat = la.norm(new_roots - w_roots, np.inf) / la.norm(new_h, np.inf)
+        k = k_hat * la.norm(w_coeffs, np.inf) / la.norm(w_roots, np.inf)
+        abs_cond.append(k_hat)
+        rel_cond.append(k)
 
     # Plot the roots in the complex plane
     plt.scatter(perturbed_roots.real, perturbed_roots.imag, marker='.', label="perturbed")
@@ -69,11 +76,7 @@ def prob2():
     plt.show()
 
     # Return absolute and relative condition numbers
-    perturbed_roots = np.reshape(perturbed_roots, (100, 20))
-    abs_cond = la.norm(perturbed_roots - w_roots, np.inf) / la.norm(h, np.inf)
-    rel_cond = abs_cond * la.norm(w_coeffs, np.inf) / la.norm(w_roots, np.inf)
-
-    return abs_cond, rel_cond
+    return np.mean(abs_cond), np.mean(rel_cond)
 
 
 # Test problem 2
