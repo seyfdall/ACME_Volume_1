@@ -1,8 +1,8 @@
 # profiling.py
 """Python Essentials: Profiling.
-<Name>
-<Class>
-<Date>
+<Name> Dallin Seyfried
+<Class> 001
+<Date> 3/21/2023
 """
 
 # Note: for problems 1-4, you need only implement the second function listed.
@@ -31,9 +31,31 @@ def max_path(filename="triangle.txt"):
 
     return path_sum(0, 0, 0)            # Start the recursion from the top.
 
+
 def max_path_fast(filename="triangle_large.txt"):
     """Find the maximum vertical path in a triangle of values."""
-    raise NotImplementedError("Problem 1 Incomplete")
+    with open(filename, 'r') as infile:
+        data = [[int(n) for n in line.split()]
+                for line in infile.readlines()]
+
+    # Cycle from the next to bottom row working up
+    n = len(data)
+    for i in range(n - 1)[::-1]:
+        for j in range(len(data[i])):
+            left = data[i + 1][j]
+            right = data[i + 1][j + 1]
+            if right >= left:
+                data[i][j] = data[i][j] + right
+            else:
+                data[i][j] = data[i][j] + left
+
+    return data[0][0]
+
+
+# Test Max_Path
+def test_max_path():
+    print(max_path())
+    print(max_path_fast())
 
 
 # Problem 2
@@ -51,9 +73,35 @@ def primes(N):
         current += 1
     return primes_list
 
+
 def primes_fast(N):
     """Compute the first N primes."""
-    raise NotImplementedError("Problem 2 Incomplete")
+    # Make this a set if too slow
+    primes_list = [2]
+    current = 3
+    nprimes = 1
+    while nprimes < N:
+        is_prime = True
+        max = int(current**0.5) + 1
+        for i in primes_list:     # Check for nontrivial divisors.
+            if current % i == 0:
+                is_prime = False
+                break
+            # Check square for root condition
+            elif i > max:
+                break
+        if is_prime:
+            nprimes += 1
+            primes_list.append(current)
+        current += 2
+    return primes_list
+
+
+# Test Primes
+def test_primes_fast():
+    print('\n')
+    print(primes(100))
+    print(primes_fast(100))
 
 
 # Problem 3
@@ -72,6 +120,7 @@ def nearest_column(A, x):
         distances.append(np.linalg.norm(A[:,j] - x))
     return np.argmin(distances)
 
+
 def nearest_column_fast(A, x):
     """Find the index of the column of A that is closest in norm to x.
     Refrain from using any loops or list comprehensions.
@@ -83,7 +132,16 @@ def nearest_column_fast(A, x):
     Returns:
         (int): The index of the column of A that is closest in norm to x.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    return np.argmin(np.linalg.norm(A - x, axis=0))
+
+
+# Test nearest_column_fast
+def test_nearest_column():
+    print('\n')
+    A = np.array([[1, 2], [1, 1]])
+    x = np.array([1, 1])
+    print(nearest_column(A, x))
+    print(nearest_column_fast(A, x))
 
 
 # Problem 4
