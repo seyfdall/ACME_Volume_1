@@ -6,6 +6,7 @@
 """
 
 import numpy as np
+import networkx as nx
 
 
 # Problems 1-2
@@ -13,7 +14,9 @@ class DiGraph:
     """A class for representing directed graphs via their adjacency matrices.
 
     Attributes:
-        (fill this out after completing DiGraph.__init__().)
+        * self.n = len(A)
+        * self.A_hat is A with removed sinks
+        * self.labels
     """
     # Problem 1
     def __init__(self, A, labels=None):
@@ -94,7 +97,7 @@ class DiGraph:
         """
         # Initialize starting x and B
         B = epsilon * self.A_hat + ((1 - epsilon) / self.n) * np.ones((self.n, self.n))
-        x = np.random.random(self.n)
+        x = np.ones(self.n) / self.n
         x = x / np.linalg.norm(x)
 
         # Cycle through approximately maxiter times to refine the eigenvector x
@@ -135,15 +138,9 @@ def get_ranks(d):
     Returns:
         (list) the keys of d, sorted by PageRank value from greatest to least.
     """
-    # Get lables and values of dictionary
-    labels = list(d.keys())
-    values = list(d.values())
-
-    # Use argsort to get new order, reverse it and return it
-    sort = np.argsort(values)
-    sorted_labels = [labels[ind] for ind in sort]
-    sorted_labels.reverse()
-    return sorted_labels
+    l = [(-val, key) for key, val in zip(d.keys(), d.values())]
+    l.sort()
+    return [key for val, key in l]
 
 
 # Problem 4
@@ -168,7 +165,47 @@ def rank_websites(filename="web_stanford.txt", epsilon=0.85):
     """
     # '' possible - A should be shape(630, 630) - data.read().strip()
     with open(filename, 'r') as infile:
-        contents = infile.read()
+        contents = infile.read().strip().split('\n')
+
+    # Get set of unique ids
+    ids = set()
+    for line in contents:
+        line = line.split('/')
+        for id in line:
+            ids.add(id)
+
+    # Cast to list and sort the unique ids
+    ids_sorted = list(ids)
+    ids_sorted.sort()
+
+    # Create a dictionary mapping id to index in list
+    id_to_index = {key: value for value, key in enumerate(ids_sorted)}
+
+    # Create the A matrix
+    A = np.zeros((len(ids), len(ids)))
+    for line in contents:
+        line = line.split('/')
+        col_ind = id_to_index[line[0]]
+        for i in range(1, len(line)):
+            row_ind = id_to_index[line[i]]
+            A[row_ind, col_ind] += 1
+
+    # Construct the digraph
+    dig = DiGraph(A, ids_sorted)
+
+    # Run itersolve
+    rank_dictionary = dig.itersolve(epsilon=epsilon)
+
+    # Get the ranks
+    ranked_ids = get_ranks(rank_dictionary)
+
+    return ranked_ids
+
+
+# Test Problem 4
+def test_rank_websites():
+    ids = rank_websites()
+    print(ids)
 
 
 # Problem 5
@@ -189,7 +226,48 @@ def rank_ncaa_teams(filename, epsilon=0.85):
     Returns:
         (list(str)): The ranked list of team names.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    with open(filename, 'r') as infile:
+        contents = infile.read().strip().split('\n')
+
+    contents.pop(0)
+
+    # Get set of unique ids
+    ids = set()
+    for line in contents:
+        line = line.split(',')
+        for id in line:
+            ids.add(id)
+
+    # Cast to list and sort the unique ids
+    ids_sorted = list(ids)
+    ids_sorted.sort()
+
+    # Create a dictionary mapping id to index in list
+    id_to_index = {key: value for value, key in enumerate(ids_sorted)}
+
+    # Create the A matrix
+    A = np.zeros((len(ids), len(ids)))
+    for line in contents:
+        line = line.split(',')
+        col_ind = id_to_index[line[1]]
+        row_ind = id_to_index[line[0]]
+        A[row_ind, col_ind] += 1
+
+    # Construct the digraph
+    dig = DiGraph(A, ids_sorted)
+
+    # Run itersolve
+    rank_dictionary = dig.itersolve(epsilon=epsilon)
+
+    # Get the ranks
+    ranked_ids = get_ranks(rank_dictionary)
+
+    return ranked_ids
+
+
+# Test ncaa problem
+def test_ncaa():
+    ranks = rank_ncaa_teams("ncaa2010.csv ")
 
 
 # Problem 6
@@ -204,4 +282,46 @@ def rank_actors(filename="top250movies.txt", epsilon=0.85):
     meaning actor2 and actor3 should each have an edge pointing to actor1,
     and actor3 should have an edge pointing to actor2.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    # Make the graph with the actors
+    # DG = nx.DiGraph()
+    # for line in lines:
+    #     line = line.split('/')
+    #     for lead_ind in range(1, len(line)):
+    #         lead = line[lead_ind]
+    #         for sup_ind in range(lead_ind + 1, len(line)):
+    #             support = line[sup_ind]
+    #             if DG.has_edge(support, lead):
+    #                 DG[support][lead]["weight"] += 1
+    #             else:
+    #                 DG.add_edge(support, lead, weight=1)
+
+    # Open the filename and read in the data
+    with open(filename, 'r', encoding="utf-8") as f:
+        data = f.read().strip()
+        lines = data.split('\n')
+
+    # Get the actors and make the graph
+    DG = nx.DiGraph()
+    for line in lines:
+        movie = line.split('/')[1:]
+        # Loop through the actors and add them to the graph
+        for i in range(1, len(movie)):
+            actorlist = movie[0:i][::-1]
+            smallactor = actorlist[0]
+            # Add the actors to the graph if they are not already there
+            for actor in actorlist[1:]:
+                if not DG.has_edge(smallactor, actor):
+                    DG.add_edge(smallactor, actor, weight=1)
+                # If the edge is already there, add 1 to the weight
+                else:
+                    DG[smallactor][actor]['weight'] += 1
+
+    # Get the page rank
+    rank = nx.pagerank(DG, alpha=epsilon)
+    return get_ranks(rank)
+
+
+# Test rank actors
+def test_rank_actors():
+    ranks = rank_actors()
+    print(ranks)
