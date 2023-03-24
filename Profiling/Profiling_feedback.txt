@@ -1,0 +1,46 @@
+03/23/23 17:58
+
+Problem 1 (5 points):
+max_path_fast('triangle.txt'):
+	Solution time: 0.000194787979 seconds
+	Student time:  0.000145912170 seconds (Excellent!)
+max_path_fast('triangle_large.txt'):
+	Solution time: 0.003547906876 seconds
+	Student time:  0.002386093140 seconds (Excellent!)
+Score += 5
+
+Problem 2 (10 points):
+primes_fast(100):
+	Solution time: 0.000167846680 seconds
+	Student time:  0.000168085098 seconds
+primes_fast(10001):
+	Solution time: 0.067219018936 seconds
+	Student time:  0.053426980972 seconds (Excellent!)
+Score += 10
+
+Problem 3 (5 points):
+ValueError: operands could not be broadcast together with shapes (10,15) (10,) 
+
+Problem 4 (5 points):
+NotImplementedError: Problem 4 Incomplete
+
+Problem 5 (5 points):
+NotImplementedError: Problem 5 Incomplete
+
+Problem 6 (10 points):
+NotImplementedError: Problem 6 Incomplete
+
+Problem 7 (5 points):
+NotImplementedError: Problem 7 Incomplete
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 20/50 = 40.0%
+
+
+Comments:
+	Let me know if I can help! Nice job on the first one
+
+-------------------------------------------------------------------------------
+
