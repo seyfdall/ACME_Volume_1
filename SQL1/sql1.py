@@ -1,9 +1,12 @@
 # sql1.py
 """Volume 1: SQL 1 (Introduction).
-<Name>
-<Class>
-<Date>
+<Name> Dallin Seyfried
+<Class> 001
+<Date> 3/28/2023
 """
+
+import sqlite3 as sql
+import csv
 
 
 # Problems 1, 2, and 4
@@ -42,7 +45,57 @@ def student_db(db_file="students.db", student_info="student_info.csv",
         student_grades (str): The name of a csv file containing data for the
             StudentGrades table.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Establish a connection to the database/create it if it doesn't exist
+    try:
+        with sql.connect(db_file) as conn:
+            cur = conn.cursor()
+
+            # Drop tables
+            cur.execute("DROP TABLE IF EXISTS MajorInfo")
+            cur.execute("DROP TABLE IF EXISTS CourseInfo")
+            cur.execute("DROP TABLE IF EXISTS StudentInfo")
+            cur.execute("DROP TABLE IF EXISTS StudentInfo")
+
+            # Create tables
+            cur.execute("CREATE TABLE IF NOT EXISTS MajorInfo (MajorID INTEGER, MajorName TEXT)")
+            cur.execute("CREATE TABLE IF NOT EXISTS CourseInfo (CourseID INTEGER, CourseName TEXT)")
+            cur.execute("CREATE TABLE IF NOT EXISTS StudentInfo (StudentID INTEGER, StudentName TEXT, MajorID INTEGER)")
+            cur.execute("CREATE TABLE IF NOT EXISTS StudentGrades (StudentID INTEGER, CourseID INTEGER, Grade TEXT)")
+
+            # Populate the new tables
+            major_info_rows = [(1, 'Math'), (2, 'Science'), (3, 'Writing'), (4, 'Art')]
+            course_info_rows = [(1, 'Calculus'), (2, 'English'), (3, 'Pottery'), (4, 'History')]
+            cur.executemany("INSERT INTO MajorInfo(MajorID, MajorName) VALUES(?, ?);", major_info_rows)
+            cur.executemany("INSERT INTO CourseInfo(CourseID, CourseName) VALUES(?, ?);", course_info_rows)
+
+            # Read in student info
+            with open(student_info, 'r') as infile:
+                student_info_rows = list(csv.reader(infile))
+                cur.executemany("INSERT INTO StudentInfo(StudentID, StudentName, MajorID) VALUES(?, ?, ?);", student_info_rows)
+
+            # Read in student grades csv
+            with open(student_grades, 'r') as infile:
+                student_grades_rows = list(csv.reader(infile))
+                cur.executemany("INSERT INTO StudentGrades(StudentID, CourseID, Grade) VALUES(?, ?, ?);", student_grades_rows)
+
+
+    finally:
+        conn.close()
+
+
+# Test Problem student_db
+def test_student_db():
+    student_db()
+    print('\n')
+
+    # Test updated tables
+    with sql.connect("students.db") as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM StudentInfo")
+        print([d[0] for d in cur.description])
+
+        for row in cur.execute("SELECT * FROM MajorInfo;"):
+            print(row)
 
 
 # Problems 3 and 4
@@ -62,7 +115,38 @@ def earthquakes_db(db_file="earthquakes.db", data_file="us_earthquakes.csv"):
         data_file (str): The name of a csv file containing data for the
             USEarthquakes table.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    # Establish a connection to the database/create it if it doesn't exist
+    try:
+        with sql.connect(db_file) as conn:
+            cur = conn.cursor()
+
+        # Reset Database
+        cur.execute("DROP TABLE IF EXISTS USEarthquakes")
+        cur.execute("CREATE TABLE IF NOT EXISTS USEarthquakes (Year INTEGER, Month INTEGER, Day INTEGER, Hour INTEGER, "
+                    "Minute INTEGER, Second INTEGER, Latitude REAL, Longitude REAL, Magnitude REAL)")
+
+        # Read in earthquake data
+        with open(data_file, 'r') as infile:
+            data_rows = list(csv.reader(infile))
+            cur.executemany("INSERT INTO USEarthquakes (Year, Month, Day, Hour, "
+                    "Minute, Second, Latitude, Longitude, Magnitude) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", data_rows)
+            # Delete rows with magnitude of 0
+            cur.execute("DELETE FROM USEarthquakes WHERE Magnitude <= 0;")
+    finally:
+        conn.close()
+
+
+# Test Earthquakes db
+def test_earthquakes_db():
+    earthquakes_db()
+    print('\n')
+
+    # Test updated tables
+    with sql.connect("earthquakes.db") as conn:
+        cur = conn.cursor()
+
+        for row in cur.execute("SELECT * FROM USEarthquakes;"):
+            print(row)
 
 
 # Problem 5
