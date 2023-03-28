@@ -8,9 +8,11 @@
 # Note: for problems 1-4, you need only implement the second function listed.
 # For example, you need to write max_path_fast(), but keep max_path() unchanged
 # so you can do a before-and-after comparison.
-
+import math
+import time
+import matplotlib.pyplot as plt
+from numba import jit
 import numpy as np
-
 
 # Problem 1
 def max_path(filename="triangle.txt"):
@@ -41,7 +43,8 @@ def max_path_fast(filename="triangle_large.txt"):
     # Cycle from the next to bottom row working up
     n = len(data)
     for i in range(n - 1)[::-1]:
-        for j in range(len(data[i])):
+        m = len(data[i])
+        for j in range(m):
             left = data[i + 1][j]
             right = data[i + 1][j + 1]
             if right >= left:
@@ -55,7 +58,7 @@ def max_path_fast(filename="triangle_large.txt"):
 # Test Max_Path
 def test_max_path():
     print(max_path())
-    print(max_path_fast())
+    print(max_path_fast("triangle.txt"))
 
 
 # Problem 2
@@ -132,13 +135,15 @@ def nearest_column_fast(A, x):
     Returns:
         (int): The index of the column of A that is closest in norm to x.
     """
+    # Modify the shape of x so that it can be array-broadcasted with A
+    x.shape = (len(x), 1)
     return np.argmin(np.linalg.norm(A - x, axis=0))
 
 
 # Test nearest_column_fast
 def test_nearest_column():
     print('\n')
-    A = np.array([[1, 2], [1, 1]])
+    A = np.array([[1, 2, 3, 4], [1, 1, 3, 5]])
     x = np.array([1, 1])
     print(nearest_column(A, x))
     print(nearest_column_fast(A, x))
@@ -161,15 +166,48 @@ def name_scores(filename="names.txt"):
         total += (names.index(names[i]) + 1) * name_value
     return total
 
+
 def name_scores_fast(filename='names.txt'):
     """Find the total of the name scores in the given file."""
-    raise NotImplementedError("Problem 4 Incomplete")
+    with open(filename, 'r') as infile:
+        names = sorted(infile.read().replace('"', '').split(','))
+    alphabet = {chr(ind): ind - 64 for ind in range(65, 91)}
+    total = 0
+    for index, name in enumerate(names):
+        name_value = 0
+        for letter in name:
+            name_value += alphabet[letter]
+        total += (index + 1) * name_value
+    return total
+
+
+# Test Problem 4
+def test_names_scores():
+    print('\n')
+    print(name_scores())
+    print(name_scores_fast())
 
 
 # Problem 5
 def fibonacci():
     """Yield the terms of the Fibonacci sequence with F_1 = F_2 = 1."""
-    raise NotImplementedError("Problem 5 Incomplete")
+    # Yield the first 2 terms in the Fibonacci sequence
+    a = b = 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+
+# Test fibonacci
+def test_fibonacci():
+    fib = fibonacci()
+    print('\n')
+    print(next(fib))
+    print(next(fib))
+    print(next(fib))
+    print(next(fib))
+    print(next(fib))
+
 
 def fibonacci_digits(N=1000):
     """Return the index of the first term in the Fibonacci sequence with
@@ -178,13 +216,49 @@ def fibonacci_digits(N=1000):
     Returns:
         (int): The index.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    # Start the generator
+    fib = fibonacci()
+    index = 0
+    while True:
+        index += 1
+        next_val = next(fib)
+
+        # Use math.log to efficiently find number of digits
+        if math.log10(next_val) + 1 >= N:
+            return index
+
+
+# Test fibonacci_digits
+def test_fibonacci_digits():
+    print(fibonacci_digits())
 
 
 # Problem 6
 def prime_sieve(N):
     """Yield all primes that are less than N."""
-    raise NotImplementedError("Problem 6 Incomplete")
+    # Start the list already pruned to the 3rd prime
+    integers = [i for i in range(3, N, 2) if i % 3 != 0]
+    curr_prime = 3
+
+    yield 2
+
+    # Cycle and generate next primes
+    while integers:
+        yield curr_prime
+        curr_prime = integers.pop(0)
+        for num in integers:
+            if num % curr_prime == 0:
+                integers.remove(num)
+
+    yield curr_prime
+
+
+# Test prime_sieve
+def test_prime_sieve():
+    prim = prime_sieve(100000)
+    test = next(prim)
+    while test != 99991:
+        test = next(prim)
 
 
 # Problem 7
@@ -203,12 +277,71 @@ def matrix_power(A, n):
             product[i] = temporary_array
     return product
 
+
+@jit
 def matrix_power_numba(A, n):
     """Compute A^n, the n-th power of the matrix A, with Numba optimization."""
-    raise NotImplementedError("Problem 7 Incomplete")
+    product = A.copy()
+    temporary_array = np.empty_like(A[0])
+    m = A.shape[0]
+    for power in range(1, n):
+        for i in range(m):
+            for j in range(m):
+                total = 0
+                for k in range(m):
+                    total += product[i, k] * A[k, j]
+                temporary_array[j] = total
+            product[i] = temporary_array
+    return product
+
 
 def prob7(n=10):
     """Time matrix_power(), matrix_power_numba(), and np.linalg.matrix_power()
     on square matrices of increasing size. Plot the times versus the size.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    # Compile matrix power numba
+    matrix_power_numba(np.random.random((2, 2)), 2)
+
+    # Time lists for functions
+    mat_pow_times = []
+    mat_numba_times = []
+    linalg_times = []
+    sizes = [2**i for i in range(2, 8)]
+
+    # Cycle for powers of 2 up to 2^7
+    for m in sizes:
+        # Generate random matrix
+        A = np.random.random((m, m))
+
+        # Time matrix_power()
+        start = time.perf_counter()
+        matrix_power(A, n)
+        end = time.perf_counter()
+        mat_pow_times.append(end - start)
+
+        # Time matrix_power()
+        start = time.perf_counter()
+        matrix_power_numba(A, n)
+        end = time.perf_counter()
+        mat_numba_times.append(end - start)
+
+        # Time matrix_power()
+        start = time.perf_counter()
+        np.linalg.matrix_power(A, n)
+        end = time.perf_counter()
+        linalg_times.append(end - start)
+
+    # Plot the times on a log log scale
+    plt.loglog(sizes, mat_pow_times, label="matrix_power")
+    plt.loglog(sizes, mat_numba_times, label="matrix_power_numba")
+    plt.loglog(sizes, linalg_times, label="np.linalg")
+    plt.ylabel("Times")
+    plt.xlabel("Size")
+    plt.tight_layout()
+    plt.legend()
+    plt.show()
+
+
+# Test prob7
+def test_prob7():
+    prob7()
