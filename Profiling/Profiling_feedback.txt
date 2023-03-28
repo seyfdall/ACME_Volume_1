@@ -44,3 +44,64 @@ Comments:
 
 -------------------------------------------------------------------------------
 
+03/28/23 10:23
+
+Problem 1 (5 points):
+max_path_fast('triangle.txt'):
+	Solution time: 0.000200986862 seconds
+	Student time:  0.000152111053 seconds (Excellent!)
+max_path_fast('triangle_large.txt'):
+	Solution time: 0.004365205765 seconds
+	Student time:  0.002872943878 seconds (Excellent!)
+Score += 5
+
+Problem 2 (10 points):
+primes_fast(100):
+	Solution time: 0.000199794769 seconds
+	Student time:  0.000199079514 seconds (Excellent!)
+primes_fast(10001):
+	Solution time: 0.078329086304 seconds
+	Student time:  0.079149961472 seconds
+Score += 10
+
+Problem 3 (5 points):
+nearest_column_fast(), 10x15 A:
+	Solution time: 0.000084877014 seconds
+	Student time:  0.000033140182 seconds (Excellent!)
+nearest_column_fast(), 1000x1005 A:
+	Solution time: 0.015643119812 seconds
+	Student time:  0.006157159805 seconds (Excellent!)
+Score += 5
+
+Problem 4 (5 points):
+name_scores_fast():
+	Solution time: 0.007477998734 seconds
+	Student time:  0.005359172821 seconds (Excellent!)
+Score += 5
+
+Problem 5 (5 points):
+Score += 5
+
+Problem 6 (10 points):
+list(prime_sieve(100000)):
+	Solution time: 3.415997028351 seconds
+	Student time:  6.782402038574 seconds
+Needs to be under 5 seconds as specified by the pdf
+Score += 7
+
+Problem 7 (5 points):
+Score += 5
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 47/50 = 94.0%
+
+Great job!
+
+
+Comments:
+	Nice work on this
+
+-------------------------------------------------------------------------------
+
