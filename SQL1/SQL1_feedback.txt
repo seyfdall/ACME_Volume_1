@@ -1,0 +1,95 @@
+03/31/23 09:33
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Table 'StudentInfo' incorrect
+	Correct response:
+   StudentID         StudentName  MajorID
+0  401767594  Michelle Fernandez      1.0
+2  553725811        Roberta Cook      2.0
+3  886308195          Rene Cross      3.0
+4  103066521         Cameron Kim      4.0
+6  206208438     Kristopher Tran      2.0
+7  341324754   Cassandra Holland      1.0
+9  622665098         Sammy Burke      2.0
+	Student response:
+   StudentID         StudentName  MajorID
+0  401767594  Michelle Fernandez        1
+1  678665086     Gilbert Chapman       -1
+2  553725811        Roberta Cook        2
+3  886308195          Rene Cross        3
+4  103066521         Cameron Kim        4
+5  821568627       Mercedes Hall       -1
+6  206208438     Kristopher Tran        2
+7  341324754   Cassandra Holland        1
+8  262019426      Alfonso Phelps       -1
+9  622665098         Sammy Burke        2
+Score += 4
+
+Problem 3 (5 points):
+Table 'USEarthquakes' incorrect
+	Correct response:
+      Year  Month   Day  Hour Minute Second  Latitude  Longitude  Magnitude
+0     1769      7  28.0   NaN   None   None     33.90    -117.80        6.0
+1     1774      5  11.0  15.0   None   None     37.20     -77.40        4.5
+2     1783     12  14.0  14.0   None   None     41.00     -74.50        5.3
+3     1801      2  18.0  18.0   None   None     33.00    -117.30        6.5
+4     1804     11  11.0  18.0   None   None     42.00     -87.80        4.4
+...    ...    ...   ...   ...    ...    ...       ...        ...        ...
+3562  1997      5  17.0  14.0   None   None     34.46    -106.89        4.7
+3563  1995      9   9.0  20.0   None   None     51.63    -178.10        5.6
+3564  2015      3  19.0  19.0   None   None     21.63    -157.32        4.6
+3565  2008     10  30.0   7.0   None   None     62.42    -155.62        5.5
+3566  1999      8  17.0   6.0   None   None     46.65    -122.12        5.1
+
+[3567 rows x 9 columns]
+	Student response:
+Empty DataFrame
+Columns: [Year, Month, Day, Hour, Minute, Second, Latitude, Longitude, Magnitude]
+Index: []
+Score += 2
+
+Problem 4 (10 points):
+3 rows in the StudentInfo table have a -1 for the MajorID:
+   StudentID      StudentName  MajorID
+1  678665086  Gilbert Chapman       -1
+5  821568627    Mercedes Hall       -1
+8  262019426   Alfonso Phelps       -1
+Incorrect number of rows in the USEarthquakes table
+	Correct response:
+3567
+	Student response:
+0
+Incorrect number of rows in the USEarthquakes table with Day=NULL
+	Correct response: 1
+	Student response: 0
+Incorrect number of rows in the USEarthquakes table with Hour=NULL
+	Correct response: 152
+	Student response: 0
+Incorrect number of rows in the USEarthquakes table with Minute=NULL
+	Correct response: 3567
+	Student response: 0
+Incorrect number of rows in the USEarthquakes table with Second=NULL
+	Correct response: 3567
+	Student response: 0
+Score += 1
+
+Problem 5 (10 points):
+NotImplementedError: Problem 5 Incomplete
+
+Problem 6 (10 points):
+NotImplementedError: Problem 6 Incomplete
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 17/50 = 34.0%
+
+
+Comments:
+	Good start, let me know if I can help with any questions
+
+-------------------------------------------------------------------------------
+
