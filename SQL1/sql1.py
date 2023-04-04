@@ -7,6 +7,8 @@
 
 import sqlite3 as sql
 import csv
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 # Problems 1, 2, and 4
@@ -54,7 +56,7 @@ def student_db(db_file="students.db", student_info="student_info.csv",
             cur.execute("DROP TABLE IF EXISTS MajorInfo")
             cur.execute("DROP TABLE IF EXISTS CourseInfo")
             cur.execute("DROP TABLE IF EXISTS StudentInfo")
-            cur.execute("DROP TABLE IF EXISTS StudentInfo")
+            cur.execute("DROP TABLE IF EXISTS StudentGrades")
 
             # Create tables
             cur.execute("CREATE TABLE IF NOT EXISTS MajorInfo (MajorID INTEGER, MajorName TEXT)")
@@ -78,6 +80,7 @@ def student_db(db_file="students.db", student_info="student_info.csv",
                 student_grades_rows = list(csv.reader(infile))
                 cur.executemany("INSERT INTO StudentGrades(StudentID, CourseID, Grade) VALUES(?, ?, ?);", student_grades_rows)
 
+            cur.execute("UPDATE StudentInfo SET MajorID=NULL WHERE MajorID==-1")
 
     finally:
         conn.close()
@@ -95,6 +98,9 @@ def test_student_db():
         print([d[0] for d in cur.description])
 
         for row in cur.execute("SELECT * FROM MajorInfo;"):
+            print(row)
+
+        for row in cur.execute("SELECT * FROM StudentInfo;"):
             print(row)
 
 
@@ -120,18 +126,23 @@ def earthquakes_db(db_file="earthquakes.db", data_file="us_earthquakes.csv"):
         with sql.connect(db_file) as conn:
             cur = conn.cursor()
 
-        # Reset Database
-        cur.execute("DROP TABLE IF EXISTS USEarthquakes")
-        cur.execute("CREATE TABLE IF NOT EXISTS USEarthquakes (Year INTEGER, Month INTEGER, Day INTEGER, Hour INTEGER, "
-                    "Minute INTEGER, Second INTEGER, Latitude REAL, Longitude REAL, Magnitude REAL)")
+            # Reset Database
+            cur.execute("DROP TABLE IF EXISTS USEarthquakes")
+            cur.execute("CREATE TABLE IF NOT EXISTS USEarthquakes (Year INTEGER, Month INTEGER, Day INTEGER, Hour INTEGER, "
+                        "Minute INTEGER, Second INTEGER, Latitude REAL, Longitude REAL, Magnitude REAL)")
 
-        # Read in earthquake data
-        with open(data_file, 'r') as infile:
-            data_rows = list(csv.reader(infile))
-            cur.executemany("INSERT INTO USEarthquakes (Year, Month, Day, Hour, "
-                    "Minute, Second, Latitude, Longitude, Magnitude) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", data_rows)
+            # Read in earthquake data
+            with open(data_file, 'r') as infile:
+                data_rows = list(csv.reader(infile))
+                cur.executemany("INSERT INTO USEarthquakes VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", data_rows)
+
             # Delete rows with magnitude of 0
             cur.execute("DELETE FROM USEarthquakes WHERE Magnitude <= 0;")
+            # Replace 0 values in Day, Hour, Minute, and Second columns with NULL values
+            cur.execute("UPDATE USEarthquakes SET Day=NULL WHERE Day==0")
+            cur.execute("UPDATE USEarthquakes SET Hour=NULL WHERE Hour==0")
+            cur.execute("UPDATE USEarthquakes SET Minute=NULL WHERE Minute==0")
+            cur.execute("UPDATE USEarthquakes SET Second=NULL WHERE Second==0")
     finally:
         conn.close()
 
@@ -161,7 +172,25 @@ def prob5(db_file="students.db"):
     Returns:
         (list): the complete result set for the query.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    # Establish a connection to the database/create it if it doesn't exist
+    students = []
+    try:
+        with sql.connect(db_file) as conn:
+            cur = conn.cursor()
+            # Select students
+            students = cur.execute("SELECT SI.StudentName, CI.CourseName "
+                               "FROM StudentInfo AS SI, StudentGrades AS SG, CourseInfo as CI "
+                               "WHERE SI.StudentID == SG.StudentID AND SG.CourseID == CI.CourseID "
+                               "AND (SG.Grade == 'A' OR SG.Grade == 'A+')").fetchall()
+    finally:
+        conn.close()
+
+    return students
+
+
+# Test Problem 5
+def test_prob5():
+    print(prob5())
 
 
 # Problem 6
@@ -177,4 +206,31 @@ def prob6(db_file="earthquakes.db"):
     Returns:
         (float): The average magnitude of all earthquakes in the database.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    try:
+        with sql.connect(db_file) as conn:
+            # Get the magnitudes from the database
+            cur = conn.cursor()
+            mag_19th = np.ravel(cur.execute("SELECT Magnitude FROM USEarthquakes WHERE Year >= 1800 and Year < 1900").fetchall())
+            mag_20th = np.ravel(cur.execute("SELECT Magnitude FROM USEarthquakes WHERE Year >= 1900 and Year < 2000").fetchall())
+            average = cur.execute("SELECT AVG(Magnitude) FROM USEarthquakes").fetchone()[0]
+    finally:
+        conn.close()
+
+    # Plot the histograms
+    plt.subplot(121)
+    plt.hist(mag_19th)
+    plt.title("Magnitude for the 19th Century")
+
+    plt.subplot(122)
+    plt.hist(mag_20th)
+    plt.title("Magnitude for the 20th Century")
+
+    plt.tight_layout()
+    plt.show()
+
+    return average
+
+
+# Test Problem 6
+def test_prob6():
+    print(prob6())
