@@ -184,4 +184,33 @@ def prob5(db_file="mystery_database.db"):
     Returns:
         (list): outlier's name, outlier's ID number, outlier's eye color, outlier's height
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    # Establish a connection to the database/create it if it doesn't exist
+    try:
+        with sql.connect(db_file) as conn:
+            cur = conn.cursor()
+            # Get species_2nd, species_3rd, species, home_world information
+            table_4_info = cur.execute("SELECT * "
+                                       "FROM table_4 as tab "
+                                       "WHERE tab.home_world == 'Earth';").fetchall()
+            # Get ID_number, description information from home_world in table_4
+            table_2_info = cur.execute("SELECT * "
+                                       "FROM table_2 as tab "
+                                       "WHERE tab.description LIKE '%Earth%';").fetchall()
+            # Get name, eye_color from name in description from table_2
+            table_1_info = cur.execute("SELECT * "
+                                       "FROM table_1 as tab "
+                                       "WHERE tab.name LIKE '%Riker%';").fetchall()
+            # Get gender, height, eye_color, skin_color, hair_color, weight from table_1 eye_color
+            table_3_info = cur.execute("SELECT * "
+                                       "FROM table_3 as tab "
+                                       "WHERE tab.eye_color == 'Hazel-blue';").fetchall()
+    finally:
+        conn.close()
+
+    return ["William T. Riker", 830744, "Hazel-blue", 1.93]
+
+
+# Test Problem 5
+def test_prob5():
+    print('\n')
+    print(prob5())
