@@ -1,11 +1,12 @@
 # iterative_solvers.py
 """Volume 1: Iterative Solvers.
-<Name>
-<Class>
-<Date>
+<Name> Dallin Seyfried
+<Class> 001
+<Date> 04/17/2023
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 # Helper function
@@ -32,8 +33,9 @@ def diag_dom(n, num_entries=None):
         A[i,i] = np.sum(np.abs(A[i])) + 1
     return A
 
+
 # Problems 1 and 2
-def jacobi(A, b, tol=1e-8, maxiter=100):
+def jacobi(A, b, tol=1e-8, maxiter=100, plot=False):
     """Calculate the solution to the system Ax = b via the Jacobi Method.
 
     Parameters:
@@ -45,7 +47,43 @@ def jacobi(A, b, tol=1e-8, maxiter=100):
     Returns:
         ((n,) ndarray): The solution to system Ax = b.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    # Break A down into its component matrices
+    n = A.shape[0]
+    D_inv = np.diag(1 / np.diagonal(A))
+
+    # Iterate until maxiters or tolerance is reached
+    x_new = np.zeros(n)
+    abs_err = []
+    for k in range(maxiter):
+        x_old = x_new.copy()
+        x_new = x_old + D_inv @ (b - A @ x_old)
+        if np.linalg.norm(x_new - x_old) < tol:
+            break
+        # Track absolute error at each step
+        abs_err.append(np.linalg.norm(A @ x_new - b, ord=np.inf))
+
+    # Plot convergence of jacobi
+    if plot:
+        plt.semilogy(abs_err)
+        plt.title("Convergence of Jacobi Method")
+        plt.xlabel("Iteration")
+        plt.ylabel("Absolute Error of Approximation")
+        plt.tight_layout()
+        plt.show()
+
+    return x_new
+
+
+# Test Problem 1 & 2
+def test_jacobi():
+    n = 10
+    A = diag_dom(n)
+    b = np.random.random(n)
+    x = jacobi(A, b, plot=True)
+    print('\n')
+    print(A @ x)
+    print(b)
+    print(np.allclose(A @ x, b))
 
 
 # Problem 3
@@ -62,7 +100,45 @@ def gauss_seidel(A, b, tol=1e-8, maxiter=100, plot=False):
     Returns:
         x ((n,) ndarray): The solution to system Ax = b.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    # Break A down into its component matrices
+    n = A.shape[0]
+    D_inv = 1 / np.diagonal(A)
+
+    # Iterate until maxiters or tolerance is reached
+    x_new = np.zeros(n)
+    abs_err = []
+    for k in range(maxiter):
+        x_old = x_new.copy()
+        # Use Gauss-Siedel's method to simplify iteration
+        for i in range(n):
+            x_new[i] = x_old[i] + D_inv[i] * (b[i] - A[i, :] @ x_old)
+        if np.linalg.norm(x_new - x_old) < tol:
+            break
+        # Track absolute error at each step
+        abs_err.append(np.linalg.norm(A @ x_new - b, ord=np.inf))
+
+    # Plot the convergence of Guass-Siedel
+    if plot:
+        plt.semilogy(abs_err)
+        plt.title("Convergence of Gauss-Siedel Method")
+        plt.xlabel("Iteration")
+        plt.ylabel("Absolute Error of Approximation")
+        plt.tight_layout()
+        plt.show()
+
+    return x_new
+
+
+# Test Problem 3
+def test_problem_3():
+    n = 10
+    A = diag_dom(n)
+    b = np.random.random(n)
+    x = gauss_seidel(A, b, plot=True)
+    print('\n')
+    print(A @ x)
+    print(b)
+    print(np.allclose(A @ x, b))
 
 
 # Problem 4
