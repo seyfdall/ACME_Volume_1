@@ -4,3 +4,38 @@ iterative_solvers.py has not been modified yet
 
 -------------------------------------------------------------------------------
 
+04/18/23 09:18
+
+Problem 1 (10 points):
+Score += 10
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Should look different from the plot in the previous questions
+Score += 9
+
+Problem 4 (5 points):
+NotImplementedError: Problem 4 Incomplete
+
+Problem 5 (5 points):
+NotImplementedError: Problem 5 Incomplete
+
+Problem 6 (5 points):
+NotImplementedError: Problem 6 Incomplete
+
+Problem 7 (5 points):
+NotImplementedError: Problem 7 Incomplete
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 29/50 = 58.0%
+
+
+Comments:
+	Nice work. Good luck this summer and in the future!
+
+-------------------------------------------------------------------------------
+
